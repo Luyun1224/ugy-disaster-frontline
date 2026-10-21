@@ -192,13 +192,23 @@ td.num{font-family:var(--mono);font-size:15px}
 .fb-tools .input{max-width:360px;height:48px}
 .toggle{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 18px;border:var(--bd);border-radius:999px;background:#fff;font-weight:900;cursor:pointer;user-select:none}
 .toggle input{width:20px;height:20px;accent-color:var(--red)}
-.fb-col h3{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:20px;font-weight:900;margin-bottom:14px}
-.fb-col h3 span{font-family:var(--mono);font-size:14px;font-weight:800;background:var(--char);color:var(--cream);border-radius:999px;padding:2px 12px}
-.fb-list{display:grid;gap:12px;max-height:640px;overflow-y:auto;padding:4px 10px 10px 4px}
-.fb{background:#fff;border:var(--bd);border-radius:var(--r-lg);padding:14px 18px;box-shadow:4px 4px 0 var(--char)}
-.fb p{font-weight:700;line-height:1.7;white-space:pre-wrap;word-break:break-word}
-.fb small{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gray)}
+.fb-stack{display:grid;gap:44px}
+.fb-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid var(--char)}
+.fb-head h3{font-size:24px;font-weight:900;line-height:1.3}
+.fb-tag{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;padding:4px 12px;border:2px solid var(--char);border-radius:999px}
+.fb-tag--gain{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.fb-tag--imp{background:var(--red);color:var(--white);border-color:var(--red)}
+.fb-head .cnt{margin-left:auto;font-family:var(--mono);font-size:15px;font-weight:800;background:var(--char);color:var(--cream);border-radius:999px;padding:3px 14px}
+.fb-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.fb{display:flex;flex-direction:column;gap:14px;background:var(--white);border:var(--bd);border-radius:var(--r-lg);padding:20px 22px;box-shadow:5px 5px 0 var(--char)}
+.fb--gain{border-top:10px solid var(--navy)}
+.fb--imp{border-top:10px solid var(--red)}
+.fb p{flex:1;font-weight:700;font-size:16px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.fb footer{display:flex;flex-wrap:wrap;gap:6px;padding-top:12px;border-top:2px dashed var(--char)}
+.fb footer span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border:2px solid var(--char);border-radius:999px;background:var(--cream);font-size:12px;font-weight:900}
+.fb footer span.d{font-family:var(--mono);background:#fff}
 .fb mark{background:var(--yellow);color:inherit;padding:0 2px}
+.fb-more{display:flex;justify-content:center;margin-top:22px}
 
 /* ---------- admin ---------- */
 .admin{display:grid;gap:24px}
@@ -285,7 +295,9 @@ td.nm{font-weight:900;font-size:17px}
 .toast.show{transform:translate(-50%,0)}
 
 @media (max-width:1080px){ .tiles{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:1000px){ .fb-list{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:860px){ .r-tiles{grid-template-columns:1fr 1fr} .insights{grid-template-columns:1fr} }
+@media (max-width:640px){ .fb-list{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:860px){
   .hero__in{grid-template-columns:1fr;gap:32px;padding:44px 0 40px}
   .hero-card{max-width:460px}
@@ -415,11 +427,11 @@ td.nm{font-weight:900;font-size:17px}
       <p class="sec-desc">點選任一梯次即可篩選整份儀表板，再點一次取消。</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>課程日期</th><th>梯次</th><th class="r">報到／應到</th><th class="r">回收</th><th>回收率</th><th class="r">平均</th><th class="r">檢傷正確率</th></tr></thead>
+          <thead><tr><th>上課日期</th><th class="r">報到／應到</th><th class="r">回收</th><th>回收率</th><th class="r">平均</th><th class="r">檢傷正確率</th></tr></thead>
           <tbody id="sessRows"></tbody>
         </table>
       </div>
-      <p class="note">沒有報到紀錄的梯次（例如由 Google 表單匯入的歷史資料），以梯次設定的「預計人數」當作應到人數計算回收率，並標示「預計」。依學校篩選時，這類梯次無法拆分學校，回收率顯示「—」。</p>
+      <p class="note">沒有報到紀錄的梯次（例如由 Google 表單匯入的歷史資料），以「預計人數」當作應到人數計算回收率，並標示「預計」；未填預計人數時以每梯次 12 人計。依學校篩選時，這類梯次無法拆分學校，回收率顯示「—」。</p>
     </div>
   </section>
 
@@ -456,9 +468,17 @@ td.nm{font-weight:900;font-size:17px}
         <input class="input" id="fbSearch" type="search" placeholder="搜尋關鍵字，例如：檢傷、指揮官、時間">
         <label class="toggle"><input type="checkbox" id="hideNone" checked> 隱藏「無」等空白回覆</label>
       </div>
-      <div class="grid2">
-        <div class="fb-col"><h3>最有收穫的部分 <span id="gainN">0</span></h3><div class="fb-list" id="gainList"></div></div>
-        <div class="fb-col"><h3>需要改進的地方 <span id="impN">0</span></h3><div class="fb-list" id="impList"></div></div>
+      <div class="fb-stack">
+        <div>
+          <div class="fb-head"><span class="fb-tag fb-tag--gain">GAIN</span><h3>最有收穫的部分</h3><span class="cnt" id="gainN">0</span></div>
+          <div class="fb-list" id="gainList"></div>
+          <div class="fb-more" id="gainMore" hidden><button type="button" class="btn-line" data-more="gain">顯示全部</button></div>
+        </div>
+        <div>
+          <div class="fb-head"><span class="fb-tag fb-tag--imp">IMPROVE</span><h3>需要改進的地方</h3><span class="cnt" id="impN">0</span></div>
+          <div class="fb-list" id="impList"></div>
+          <div class="fb-more" id="impMore" hidden><button type="button" class="btn-line" data-more="improve">顯示全部</button></div>
+        </div>
       </div>
     </div>
   </section>
@@ -582,6 +602,7 @@ td.nm{font-weight:900;font-size:17px}
 <script>
 /* ================= 設定區 ================= */
 const CONFIG = {
+  DEFAULT_EXPECTED: 12,   // 沒有報到紀錄、也沒填預計人數的梯次，以每梯次 12 人計算回收率
   GAS_URL: 'https://script.google.com/macros/s/AKfycbwLuUrYxrqGdlOXaFSDBETDdEkt8LgkeeRWrWcotNgGeS46MAkDimWOEr1lH8PbnFJs/exec'
 };
 const QUESTIONS = [
@@ -600,7 +621,7 @@ const store = {
   get(k) { try { return sessionStorage.getItem(k); } catch (_) { return null; } },
   set(k, v) { try { sessionStorage.setItem(k, v); } catch (_) {} }
 };
-const state = { data: null, key: '', session: '', school: '', roster: null, rFilter: 'all', dim: 'school', theme: -1 };
+const state = { data: null, key: '', session: '', school: '', roster: null, rFilter: 'all', dim: 'school', theme: -1, more: {} };
 const THEMES = [
   ['檢傷', ['檢傷']], ['團隊合作', ['團隊', '合作', '分工']], ['溝通', ['溝通']], ['指揮架構', ['指揮', '組織', '架構', '角色']],
   ['模擬演練', ['模擬', '演練', '遊戲', '實作']], ['臨場應變', ['臨場', '應變', '壓力', '判斷']], ['時間安排', ['時間', '拉長', '太短', '太趕']]
@@ -683,7 +704,12 @@ function sessionList() {
   [...d.surveys, ...d.checkins].forEach(r => {
     if (r.session && !map.has(r.session)) map.set(r.session, { code: r.session, date: r.date, name: r.session });
   });
-  return [...map.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
+  const list = [...map.values()].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.code < b.code ? -1 : 1));
+  // 標籤只顯示上課日期；同一天有多個梯次時加上場次
+  const seen = {};
+  list.slice().reverse().forEach(s => { seen[s.date] = (seen[s.date] || 0) + 1; s.n = seen[s.date]; });
+  list.forEach(s => { s.label = list.filter(x => x.date === s.date).length > 1 ? `${s.date}（第${s.n}場）` : s.date; });
+  return list;
 }
 function scoped() {
   const d = state.data;
@@ -706,7 +732,7 @@ document.addEventListener('mousemove', e => {
 function renderFilters() {
   const sl = sessionList();
   $('#fSession').innerHTML = '<option value="">全部梯次</option>' +
-    sl.map(s => `<option value="${esc(s.code)}">${esc(s.date)}｜${esc(s.name)}</option>`).join('');
+    sl.map(s => `<option value="${esc(s.code)}">${esc(s.label)}</option>`).join('');
   const schools = [...new Set([...state.data.surveys, ...state.data.checkins].map(r => r.school).filter(Boolean))].sort();
   $('#fSchool').innerHTML = '<option value="">全部學校</option>' + schools.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
   $('#fSession').value = state.session; $('#fSchool').value = state.school;
@@ -718,13 +744,13 @@ function sessStat(s) {
   const ck = d.checkins.filter(r => r.session === s.code && bySchool(r));
   let den = null, num = null, est = false;
   if (ck.length) { den = ck.length; num = ck.filter(r => r.surveyed).length; }
-  else if (!state.school && s.expected) { den = s.expected; num = Math.min(sv.length, s.expected); est = true; }
+  else if (!state.school && sv.length) { const e = s.expected || CONFIG.DEFAULT_EXPECTED; den = e; num = Math.min(sv.length, e); est = true; }
   return { sv, ck, den, num, est };
 }
 function renderKPI(sv, ck) {
   const sl = sessionList();
   const sName = state.session ? (sl.find(s => s.code === state.session) || {}) : null;
-  $('#scopeText').textContent = `目前範圍：${sName ? `${sName.date}｜${sName.name}` : `全部梯次（共 ${new Set(sv.map(r => r.session)).size} 梯次有回覆）`}${state.school ? '・' + state.school : ''}`;
+  $('#scopeText').textContent = `目前範圍：${sName ? sName.label : `全部梯次（共 ${new Set(sv.map(r => r.session)).size} 梯次有回覆）`}${state.school ? '・' + state.school : ''}`;
   $('#kN').textContent = sv.length;
   $('#kNft').textContent = `${new Set(sv.map(r => r.school)).size} 所學校`;
   const stats = (state.session ? sl.filter(x => x.code === state.session) : sl).map(sessStat).filter(t => t.sv.length || t.ck.length);
@@ -767,7 +793,7 @@ const HSTEPS = [[0, '4.0 以下'], [4.0, '4.0–4.39'], [4.4, '4.4–4.69'], [4.
 const hstep = v => v == null ? 0 : HSTEPS.reduce((acc, [t], i) => v >= t ? i + 1 : acc, 1);
 function groupBy(rows, dim) {
   const sl = sessionList();
-  const label = r => dim === 'session' ? ((sl.find(s => s.code === r.session) || {}).date || r.session) : (r[dim] || '未填');
+  const label = r => dim === 'session' ? ((sl.find(s => s.code === r.session) || {}).label || r.date || r.session) : (r[dim] || '未填');
   const map = new Map();
   rows.forEach(r => { const k = label(r); if (!map.has(k)) map.set(k, []); map.get(k).push(r); });
   const list = [...map.entries()];
@@ -821,12 +847,12 @@ function renderSessions() {
   }).filter(r => r.n || r.inN);
   $('#sessRows').innerHTML = rows.length ? rows.map(r => `
     <tr data-code="${esc(r.s.code)}" class="${r.s.code === state.session ? 'on' : ''}">
-      <td class="num">${esc(r.s.date)}</td><td>${esc(r.s.name)}</td>
+      <td class="num">${esc(r.s.label)}</td>
       <td class="num r">${r.inN || (r.est ? `${r.den}<span class="est">預計</span>` : '<span class="na">—</span>')}</td><td class="num r">${r.n}</td>
       <td>${r.rate == null ? '<span class="na">—</span>' :
         `<div class="minibar"><div class="minibar__t"><div class="minibar__f" style="width:${r.rate}%"></div></div><span class="num">${r.rate}%</span></div>`}</td>
       <td class="num r">${f1(r.m)}</td><td class="num r">${r.tri == null ? '<span class="na">—</span>' : r.tri + '%'}</td>
-    </tr>`).join('') : '<tr><td colspan="7" class="empty">目前沒有資料</td></tr>';
+    </tr>`).join('') : '<tr><td colspan="6" class="empty">目前沒有資料</td></tr>';
 }
 
 function renderTriage(sv) {
@@ -878,16 +904,21 @@ function renderFeedback(sv) {
   const marks = [...words, kw].filter(Boolean);
   const hl = t => marks.reduce((acc, w) => acc.split(esc(w)).join(`<mark>${esc(w)}</mark>`), esc(t));
   const themeOk = t => !words.length || words.some(w => t.includes(w));
-  const build = (field, listEl, nEl) => {
+  const LIMIT = 9;
+  const build = (field, listEl, nEl, moreEl, cls) => {
     const items = sv.filter(r => r[field] && !(hide && isNone(r[field])) && themeOk(r[field]) && (!kw || r[field].includes(kw)))
       .sort((a, b) => (a.time < b.time ? 1 : -1));
+    const open = state.more[field] || items.length <= LIMIT;
     $(nEl).textContent = items.length;
-    $(listEl).innerHTML = items.length ? items.map(r => `
-      <div class="fb"><p>${hl(r[field])}</p><small>${esc(r.date)}・${esc(r.school)}・${esc(r.grade)}</small></div>`).join('')
-      : '<p class="empty">沒有符合的回覆</p>';
+    $(listEl).innerHTML = items.length ? (open ? items : items.slice(0, LIMIT)).map(r => `
+      <article class="fb ${cls}"><p>${hl(r[field])}</p>
+        <footer><span class="d">${esc(r.date)}</span><span>${esc(r.school)}</span><span>${esc(r.grade)}</span></footer></article>`).join('')
+      : '<p class="empty" style="grid-column:1/-1">沒有符合的回覆</p>';
+    $(moreEl).hidden = items.length <= LIMIT;
+    $(moreEl).querySelector('button').textContent = state.more[field] ? '收合' : `顯示全部 ${items.length} 則`;
   };
-  build('gain', '#gainList', '#gainN');
-  build('improve', '#impList', '#impN');
+  build('gain', '#gainList', '#gainN', '#gainMore', 'fb--gain');
+  build('improve', '#impList', '#impN', '#impMore', 'fb--imp');
 }
 
 /* ---------- 梯次管理 ---------- */
@@ -1087,6 +1118,10 @@ function init() {
     state.theme = state.theme === +b.dataset.i ? -1 : +b.dataset.i;
     renderFeedback(scoped().surveys);
   });
+  document.querySelectorAll('[data-more]').forEach(b => b.addEventListener('click', () => {
+    state.more[b.dataset.more] = !state.more[b.dataset.more];
+    renderFeedback(scoped().surveys);
+  }));
   $('#hideNone').addEventListener('change', () => renderFeedback(scoped().surveys));
   load(true).then(() => {
     const saved = store.get('df_key');
