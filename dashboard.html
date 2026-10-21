@@ -431,7 +431,7 @@ td.nm{font-weight:900;font-size:17px}
           <tbody id="sessRows"></tbody>
         </table>
       </div>
-      <p class="note">沒有報到紀錄的梯次（例如由 Google 表單匯入的歷史資料），以「預計人數」當作應到人數計算回收率，並標示「預計」；未填預計人數時以每梯次 12 人計。依學校篩選時，這類梯次無法拆分學校，回收率顯示「—」。</p>
+      <p class="note">梯次以上課日期為單位，同一天的資料會合併計算。沒有報到紀錄的梯次（例如由 Google 表單匯入的歷史資料），以「預計人數」當作應到人數計算回收率，並標示「預計」；未填預計人數時以每梯次 12 人計。依學校篩選時，這類梯次無法拆分學校，回收率顯示「—」。</p>
     </div>
   </section>
 
@@ -698,22 +698,30 @@ const isJudged = r => r.correct === '正確' || r.correct === '錯誤';
 const NONE_RE = /^(無|沒有|沒|没有|無意見|暫無|目前沒有|沒意見|none|no|na|n\/a|nil|-|—|x)$/i;
 const isNone = t => !t || NONE_RE.test(t.replace(/[\s，,。.!！～~、]/g, ''));
 
-function sessionList() {
+// 儀表板以「上課日期」為梯次單位：同一天的梯次代碼合併計算
+function codeDate() {
   const d = state.data, map = new Map();
-  (d.sessions || []).forEach(s => map.set(s.code, { ...s }));
-  [...d.surveys, ...d.checkins].forEach(r => {
-    if (r.session && !map.has(r.session)) map.set(r.session, { code: r.session, date: r.date, name: r.session });
-  });
-  const list = [...map.values()].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.code < b.code ? -1 : 1));
-  // 標籤只顯示上課日期；同一天有多個梯次時加上場次
-  const seen = {};
-  list.slice().reverse().forEach(s => { seen[s.date] = (seen[s.date] || 0) + 1; s.n = seen[s.date]; });
-  list.forEach(s => { s.label = list.filter(x => x.date === s.date).length > 1 ? `${s.date}（第${s.n}場）` : s.date; });
-  return list;
+  (d.sessions || []).forEach(s => map.set(s.code, s.date));
+  [...d.surveys, ...d.checkins].forEach(r => { if (r.session && !map.has(r.session)) map.set(r.session, r.date); });
+  return map;
+}
+const dateOf = r => codeDate().get(r.session) || r.date || r.session;
+function sessionList() {
+  const d = state.data, cd = codeDate(), groups = new Map();
+  const add = (date, code, s) => {
+    if (!date) return;
+    if (!groups.has(date)) groups.set(date, { code: date, date, label: date, codes: [], expected: 0, open: false });
+    const g = groups.get(date);
+    if (!g.codes.includes(code)) g.codes.push(code);
+    if (s) { g.expected = Math.max(g.expected, s.expected || 0); g.open = g.open || !!s.open; }
+  };
+  (d.sessions || []).forEach(s => add(s.date, s.code, s));
+  [...d.surveys, ...d.checkins].forEach(r => add(cd.get(r.session) || r.date, r.session));
+  return [...groups.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 function scoped() {
   const d = state.data;
-  const ok = r => (!state.session || r.session === state.session) && (!state.school || r.school === state.school);
+  const ok = r => (!state.session || dateOf(r) === state.session) && (!state.school || r.school === state.school);
   return { surveys: d.surveys.filter(ok), checkins: d.checkins.filter(ok) };
 }
 
@@ -740,8 +748,8 @@ function renderFilters() {
 
 function sessStat(s) {
   const d = state.data, bySchool = r => !state.school || r.school === state.school;
-  const sv = d.surveys.filter(r => r.session === s.code && bySchool(r));
-  const ck = d.checkins.filter(r => r.session === s.code && bySchool(r));
+  const sv = d.surveys.filter(r => dateOf(r) === s.code && bySchool(r));
+  const ck = d.checkins.filter(r => dateOf(r) === s.code && bySchool(r));
   let den = null, num = null, est = false;
   if (ck.length) { den = ck.length; num = ck.filter(r => r.surveyed).length; }
   else if (!state.school && sv.length) { const e = s.expected || CONFIG.DEFAULT_EXPECTED; den = e; num = Math.min(sv.length, e); est = true; }
@@ -793,7 +801,7 @@ const HSTEPS = [[0, '4.0 以下'], [4.0, '4.0–4.39'], [4.4, '4.4–4.69'], [4.
 const hstep = v => v == null ? 0 : HSTEPS.reduce((acc, [t], i) => v >= t ? i + 1 : acc, 1);
 function groupBy(rows, dim) {
   const sl = sessionList();
-  const label = r => dim === 'session' ? ((sl.find(s => s.code === r.session) || {}).label || r.date || r.session) : (r[dim] || '未填');
+  const label = r => dim === 'session' ? dateOf(r) : (r[dim] || '未填');
   const map = new Map();
   rows.forEach(r => { const k = label(r); if (!map.has(k)) map.set(k, []); map.get(k).push(r); });
   const list = [...map.entries()];
@@ -1047,10 +1055,10 @@ function openAdmin() {
 /* ---------- 學員完成狀態 ---------- */
 function rosterRows() {
   if (!state.roster) return [];
-  const ckSessions = new Set(state.roster.filter(r => r.checkedIn).map(r => r.session));
+  const ckSessions = new Set(state.roster.filter(r => r.checkedIn).map(dateOf));
   return state.roster
-    .filter(r => (!state.session || r.session === state.session) && (!state.school || r.school === state.school))
-    .map(r => ({ ...r, st: r.checkedIn ? (r.survey ? 'done' : 'wait') : (ckSessions.has(r.session) ? 'odd' : 'done') }));
+    .filter(r => (!state.session || dateOf(r) === state.session) && (!state.school || r.school === state.school))
+    .map(r => ({ ...r, st: r.checkedIn ? (r.survey ? 'done' : 'wait') : (ckSessions.has(dateOf(r)) ? 'odd' : 'done') }));
 }
 function renderRoster() {
   if (!state.roster) return;
