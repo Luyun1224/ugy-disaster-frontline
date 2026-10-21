@@ -166,6 +166,9 @@ td.num{font-family:var(--mono);font-size:15px}
 .minibar__t{width:110px;height:14px;border:2px solid var(--char);border-radius:999px;overflow:hidden;background:#fff}
 .minibar__f{height:100%;background:var(--navy)}
 .na{color:var(--muted)}
+.est{display:inline-block;margin-left:6px;padding:0 8px;border:2px solid var(--char);border-radius:999px;background:var(--yellow);font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:900;vertical-align:middle}
+.exp-in{width:76px;height:36px;padding:0 10px;border:2px solid var(--char);border-radius:10px;font-family:var(--mono);font-weight:800;font-size:15px;background:#fff}
+.exp-in:focus{outline:none;box-shadow:0 0 0 3px var(--yellow)}
 .empty{padding:36px 18px;text-align:center;font-weight:900;color:var(--gray)}
 
 /* ---------- bars (triage / school) ---------- */
@@ -214,7 +217,8 @@ td.num{font-family:var(--mono);font-size:15px}
 .form .btn-pill{width:100%;height:58px;font-size:18px}
 .form-note{font-size:13px;font-weight:700;color:var(--gray)}
 .admin .table-wrap{color:var(--char)}
-.admin table{min-width:480px}
+.admin table{min-width:520px}
+.admin th,.admin td{padding:12px}
 .admin tbody tr{cursor:default}
 .admin tbody tr:hover td{background:transparent}
 .sw{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border:2px solid var(--char);border-radius:999px;font-weight:900;font-size:14px;cursor:pointer;background:#fff}
@@ -239,7 +243,7 @@ td.num{font-family:var(--mono);font-size:15px}
 .modal__body{padding:24px}
 .modal__body .card-sub{margin-bottom:16px}
 .x{flex:none;width:40px;height:40px;display:grid;place-items:center;border:2px solid currentColor;border-radius:50%;background:transparent;color:inherit;font-size:20px;font-weight:900;cursor:pointer}
-.drawer{position:fixed;top:0;right:0;bottom:0;z-index:51;width:min(620px,100%);display:flex;flex-direction:column;background:var(--paper);border-left:var(--bd)}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:51;width:min(680px,100%);display:flex;flex-direction:column;background:var(--paper);border-left:var(--bd)}
 .drawer__head{display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
 .drawer__head h3{font-size:26px;font-weight:900;line-height:1.2}
 .drawer__head p{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--yellow)}
@@ -367,8 +371,8 @@ td.nm{font-weight:900;font-size:17px}
       <p class="sec-desc" id="scopeText"></p>
       <div class="tiles">
         <div class="tile tile--navy"><p class="tile__lb">問卷回收</p><p class="tile__n"><span id="kN">0</span><small>份</small></p><p class="tile__ft" id="kNft"></p></div>
-        <div class="tile"><p class="tile__lb">報到人數</p><p class="tile__n"><span id="kIn">0</span><small>人</small></p><p class="tile__ft" id="kInft"></p></div>
-        <div class="tile tile--y"><p class="tile__lb">回收率</p><p class="tile__n"><span id="kRate">—</span><small>%</small></p><p class="tile__ft">報到者中已填問卷</p></div>
+        <div class="tile"><p class="tile__lb">應到人數</p><p class="tile__n"><span id="kIn">0</span><small>人</small></p><p class="tile__ft" id="kInft"></p></div>
+        <div class="tile tile--y"><p class="tile__lb">回收率</p><p class="tile__n"><span id="kRate">—</span><small>%</small></p><p class="tile__ft">已填問卷 ÷ 應到人數</p></div>
         <div class="tile tile--red"><p class="tile__lb">整體平均</p><p class="tile__n"><span id="kMean">—</span><small>/ 5</small></p><p class="tile__ft">Q1–Q4 全部評分</p></div>
         <div class="tile"><p class="tile__lb">檢傷正確率</p><p class="tile__n"><span id="kTri">—</span><small>%</small></p><p class="tile__ft" id="kTrift"></p></div>
       </div>
@@ -411,11 +415,11 @@ td.nm{font-weight:900;font-size:17px}
       <p class="sec-desc">點選任一梯次即可篩選整份儀表板，再點一次取消。</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>課程日期</th><th>梯次</th><th class="r">報到</th><th class="r">回收</th><th>回收率</th><th class="r">平均</th><th class="r">檢傷正確率</th></tr></thead>
+          <thead><tr><th>課程日期</th><th>梯次</th><th class="r">報到／應到</th><th class="r">回收</th><th>回收率</th><th class="r">平均</th><th class="r">檢傷正確率</th></tr></thead>
           <tbody id="sessRows"></tbody>
         </table>
       </div>
-      <p class="note">無報到紀錄的梯次（例如由 Google 表單匯入的歷史資料）回收率顯示為「—」。</p>
+      <p class="note">沒有報到紀錄的梯次（例如由 Google 表單匯入的歷史資料），以梯次設定的「預計人數」當作應到人數計算回收率，並標示「預計」。依學校篩選時，這類梯次無法拆分學校，回收率顯示「—」。</p>
     </div>
   </section>
 
@@ -540,6 +544,10 @@ td.nm{font-weight:900;font-size:17px}
             </div>
           </div>
           <label class="field">
+            <span class="field-label">預計人數</span>
+            <input class="input" id="aExp" type="number" min="0" max="200" value="12" inputmode="numeric">
+          </label>
+          <label class="field">
             <span class="field-label">備註</span>
             <input class="input" id="aNote" type="text" maxlength="100" placeholder="選填，例如：中山醫第二組">
           </label>
@@ -549,7 +557,7 @@ td.nm{font-weight:900;font-size:17px}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>課程日期</th><th>梯次名稱</th><th>梯次代碼</th><th>開放狀態</th></tr></thead>
+          <thead><tr><th>課程日期</th><th>梯次名稱</th><th>梯次代碼</th><th>預計人數</th><th>開放狀態</th></tr></thead>
           <tbody id="adminRows"></tbody>
         </table>
       </div>
@@ -610,6 +618,7 @@ function demoData() {
   const imps = ['無', '希望演練時間再長一點', '指揮官角色可以更明確', '無，非常實用！'];
   const tri = ['ABCD', 'ABCD', 'ABCD', 'DABC', 'ABCD', 'BACD'];
   const sessions = [
+    { code: 'DF-DEMO-0', date: '2026/08/28', name: '舊表單梯次', open: false, expected: 12 },
     { code: 'DF-DEMO-1', date: '2026/09/10', name: '第1梯次', open: false },
     { code: 'DF-DEMO-2', date: '2026/10/22', name: '第2梯次', open: true }
   ];
@@ -620,13 +629,13 @@ function demoData() {
       k++;
       const school = sch[i % 3], name = '學員' + String(k).padStart(2, '0');
       const r = v => Math.max(1, Math.min(5, v));
-      const filled = !(si === 1 && i > 8);
-      checkins.push({ session: s.code, date: s.date, school, grade: '六年級', name, time: s.date + ' 13:2' + (i % 10) + ':00', surveyed: filled });
+      const legacy = s.code === 'DF-DEMO-0', filled = !((si === 2 || legacy) && i > 8);
+      if (!legacy) checkins.push({ session: s.code, date: s.date, school, grade: '六年級', name, time: s.date + ' 13:2' + (i % 10) + ':00', surveyed: filled });
       if (filled) surveys.push({
         session: s.code, date: s.date, school, grade: '六年級', name, time: s.date + ' 17:0' + (i % 10) + ':00',
         q1: r(5 - (i % 5 === 0)), q2: r(5 - (i % 4 === 0)), q3: r(5 - (i % 6 === 0) * 2), q4: r(4 + (i % 2)),
         triage: tri[i % tri.length], correct: tri[i % tri.length] === 'ABCD' ? '正確' : '錯誤',
-        gain: gains[i % 4], improve: imps[i % 4], checkedIn: true
+        gain: gains[i % 4], improve: imps[i % 4], checkedIn: !legacy
       });
     }
   });
@@ -640,9 +649,11 @@ async function apiPost(payload) {
     if (payload.action === 'addSession') {
       const base = 'DF-' + payload.date.replace(/\//g, '');
       let code = base, n = 2; while (ss.some(s => s.code === code)) code = base + '-' + (n++);
-      ss.push({ code, date: payload.date, name: payload.name, open: payload.open });
+      ss.push({ code, date: payload.date, name: payload.name, open: payload.open, expected: payload.expected || 0 });
     } else if (payload.action === 'setSession') {
-      const t = ss.find(s => s.code === payload.code); if (t) t.open = payload.open;
+      const t = ss.find(s => s.code === payload.code);
+      if (t && typeof payload.open === 'boolean') t.open = payload.open;
+      if (t && payload.expected != null) t.expected = payload.expected;
     }
     return { ok: true, sessions: ss.slice().sort((a, b) => (a.date < b.date ? 1 : -1)) };
   }
@@ -701,15 +712,27 @@ function renderFilters() {
   $('#fSession').value = state.session; $('#fSchool').value = state.school;
 }
 
+function sessStat(s) {
+  const d = state.data, bySchool = r => !state.school || r.school === state.school;
+  const sv = d.surveys.filter(r => r.session === s.code && bySchool(r));
+  const ck = d.checkins.filter(r => r.session === s.code && bySchool(r));
+  let den = null, num = null, est = false;
+  if (ck.length) { den = ck.length; num = ck.filter(r => r.surveyed).length; }
+  else if (!state.school && s.expected) { den = s.expected; num = Math.min(sv.length, s.expected); est = true; }
+  return { sv, ck, den, num, est };
+}
 function renderKPI(sv, ck) {
   const sl = sessionList();
   const sName = state.session ? (sl.find(s => s.code === state.session) || {}) : null;
   $('#scopeText').textContent = `目前範圍：${sName ? `${sName.date}｜${sName.name}` : `全部梯次（共 ${new Set(sv.map(r => r.session)).size} 梯次有回覆）`}${state.school ? '・' + state.school : ''}`;
   $('#kN').textContent = sv.length;
   $('#kNft').textContent = `${new Set(sv.map(r => r.school)).size} 所學校`;
-  $('#kIn').textContent = ck.length;
-  $('#kInft').textContent = ck.length ? `未填問卷 ${ck.filter(r => !r.surveyed).length} 人` : '此範圍無報到紀錄';
-  const rate = pct(ck.filter(r => r.surveyed).length, ck.length);
+  const stats = (state.session ? sl.filter(x => x.code === state.session) : sl).map(sessStat).filter(t => t.sv.length || t.ck.length);
+  const den = stats.reduce((a, t) => a + (t.den || 0), 0), num = stats.reduce((a, t) => a + (t.num || 0), 0);
+  const estN = stats.filter(t => t.est).reduce((a, t) => a + t.den, 0);
+  $('#kIn').textContent = den || '—';
+  $('#kInft').textContent = den ? `實際報到 ${ck.length} 人` + (estN ? `・依預計人數 ${estN} 人` : '') : '此範圍無報到紀錄或預計人數';
+  const rate = pct(num, den);
   $('#kRate').textContent = rate == null ? '—' : rate;
   $('#kMean').textContent = f1(mean(scoresOf(sv)));
   const judged = sv.filter(isJudged);
@@ -792,16 +815,14 @@ function renderSessions() {
   const d = state.data;
   const bySchool = r => !state.school || r.school === state.school;
   const rows = sessionList().map(s => {
-    const sv = d.surveys.filter(r => r.session === s.code && bySchool(r));
-    const ck = d.checkins.filter(r => r.session === s.code && bySchool(r));
-    const judged = sv.filter(isJudged);
-    return { s, n: sv.length, inN: ck.length, rate: pct(ck.filter(r => r.surveyed).length, ck.length),
+    const t = sessStat(s), sv = t.sv, judged = sv.filter(isJudged);
+    return { s, n: sv.length, inN: t.ck.length, est: t.est, den: t.den, rate: pct(t.num, t.den),
       m: mean(scoresOf(sv)), tri: pct(judged.filter(r => r.correct === '正確').length, judged.length) };
   }).filter(r => r.n || r.inN);
   $('#sessRows').innerHTML = rows.length ? rows.map(r => `
     <tr data-code="${esc(r.s.code)}" class="${r.s.code === state.session ? 'on' : ''}">
       <td class="num">${esc(r.s.date)}</td><td>${esc(r.s.name)}</td>
-      <td class="num r">${r.inN || '<span class="na">—</span>'}</td><td class="num r">${r.n}</td>
+      <td class="num r">${r.inN || (r.est ? `${r.den}<span class="est">預計</span>` : '<span class="na">—</span>')}</td><td class="num r">${r.n}</td>
       <td>${r.rate == null ? '<span class="na">—</span>' :
         `<div class="minibar"><div class="minibar__t"><div class="minibar__f" style="width:${r.rate}%"></div></div><span class="num">${r.rate}%</span></div>`}</td>
       <td class="num r">${f1(r.m)}</td><td class="num r">${r.tri == null ? '<span class="na">—</span>' : r.tri + '%'}</td>
@@ -874,9 +895,10 @@ function renderAdmin() {
   const list = (state.data.sessions || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1));
   $('#adminRows').innerHTML = list.length ? list.map(s => `
     <tr><td class="num">${esc(s.date)}</td><td>${esc(s.name)}</td><td class="code">${esc(s.code)}</td>
+      <td><input class="exp-in" type="number" min="0" max="200" value="${s.expected || ''}" data-code="${esc(s.code)}" aria-label="${esc(s.name)} 預計人數"></td>
       <td><button type="button" class="sw ${s.open ? 'on' : ''}" data-code="${esc(s.code)}" data-open="${s.open ? 1 : 0}"
         aria-pressed="${s.open}"><i></i>${s.open ? '開放中' : '已關閉'}</button></td></tr>`).join('')
-    : '<tr><td colspan="4" class="empty">尚未建立任何梯次</td></tr>';
+    : '<tr><td colspan="5" class="empty">尚未建立任何梯次</td></tr>';
 }
 async function addSession() {
   const date = $('#aDate').value, name = $('#aName').value.trim();
@@ -885,7 +907,7 @@ async function addSession() {
   const btn = $('#addBtn'); btn.disabled = true;
   try {
     const r = await apiPost({ action: 'addSession', date: date.replace(/-/g, '/'), name,
-      open: document.querySelector('input[name="aOpen"]:checked').value === '1', note: $('#aNote').value.trim() });
+      open: document.querySelector('input[name="aOpen"]:checked').value === '1', note: $('#aNote').value.trim(), expected: +$('#aExp').value || 0 });
     if (!r.ok) throw new Error(r.message || '新增失敗');
     state.data.sessions = r.sessions;
     $('#aName').value = ''; $('#aNote').value = '';
@@ -893,6 +915,16 @@ async function addSession() {
     toast(`已新增梯次：${name}`);
   } catch (e) { toast(e.message || '網路異常，請稍後再試'); }
   finally { btn.disabled = false; }
+}
+async function setExpected(inp) {
+  const v = Math.max(0, Math.round(+inp.value || 0));
+  inp.disabled = true;
+  try {
+    const r = await apiPost({ action: 'setSession', code: inp.dataset.code, expected: v });
+    if (!r.ok) throw new Error(r.message || '更新失敗');
+    state.data.sessions = r.sessions; renderAll(); renderAdmin();
+    toast(`已更新預計人數為 ${v} 人`);
+  } catch (e) { toast(e.message || '網路異常，請稍後再試'); inp.disabled = false; }
 }
 async function toggleSession(btn) {
   const open = btn.dataset.open !== '1';
@@ -1043,6 +1075,7 @@ function init() {
   $('#addBtn').addEventListener('click', addSession);
   ['#aDate', '#aName'].forEach(s => $(s).addEventListener('input', () => $(s).classList.remove('is-error')));
   $('#adminRows').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) toggleSession(b); });
+  $('#adminRows').addEventListener('change', e => { const i = e.target.closest('.exp-in'); if (i) setExpected(i); });
   $('#fbSearch').addEventListener('input', () => renderFeedback(scoped().surveys));
   document.querySelectorAll('.pill[data-dim]').forEach(b => b.addEventListener('click', () => {
     state.dim = b.dataset.dim;
