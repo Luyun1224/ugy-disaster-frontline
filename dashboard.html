@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>災難最前線 成效儀表板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E4441F; --red-dk:#B9300F;
+  --navy:#0E1B3D; --cream:#F2EBDC; --paper:#FAF6EC; --white:#FFFDF8;
+  --char:#1D1D1B; --gray:#5E5C57; --muted:#8A867D; --yellow:#FFC629;
+  /* 1–5 分數用分歧色階：低分紅、中間中性、高分藍 */
+  --s1:#B9300F; --s2:#E8876A; --s3:#DDD8CE; --s4:#7F92C6; --s5:#0E1B3D;
+  --bd:3px solid var(--char);
+  --r-xl:24px; --r-lg:18px; --r-md:14px;
+  --sh:6px 6px 0 var(--char);
+  --gutter:32px;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;font-weight:500;line-height:1.6;color:var(--char);background:var(--cream);overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+.wrap{width:min(1200px,calc(100% - var(--gutter)*2));margin-inline:auto}
+.mono{font-family:var(--mono)}
+[hidden]{display:none!important}
+
+.demo{background:var(--yellow);border-bottom:var(--bd);font-weight:900;font-size:14px;text-align:center;padding:8px 16px}
+.topline{background:var(--red);color:var(--white);border-bottom:var(--bd)}
+.topline__in{display:flex;justify-content:space-between;gap:16px;padding:10px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em}
+
+/* ---------- hero ---------- */
+.hero{background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
+.hero__in{display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:end;padding:56px 0 48px}
+.kicker{font-family:var(--mono);font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--yellow)}
+.hero__title{font-size:clamp(56px,9vw,120px);font-weight:900;line-height:1;letter-spacing:-.02em;margin:16px 0 18px}
+.hero__title span{color:var(--red)}
+.hero__sub{font-size:clamp(18px,2.2vw,24px);font-weight:900}
+.hero-card{background:var(--cream);color:var(--char);border:var(--bd);border-radius:var(--r-xl);box-shadow:6px 6px 0 var(--yellow);padding:24px}
+.hero-card__lb{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--red)}
+.hero-card__row{display:flex;gap:10px;margin-top:12px}
+.hero-card__row .input{flex:1}
+.hero-card__meta{margin-top:12px;font-size:14px;font-weight:700;color:var(--gray)}
+.hero-card__big{font-family:var(--mono);font-size:22px;font-weight:800;margin-top:8px}
+
+.hazard{height:20px;border-bottom:var(--bd);background:repeating-linear-gradient(-45deg,var(--yellow) 0 16px,var(--char) 16px 32px)}
+
+/* ---------- controls ---------- */
+.input,.select{width:100%;height:52px;padding:0 16px;background:#fff;border:var(--bd);border-radius:var(--r-md);font-size:16px;font-weight:700;outline:none}
+.select{appearance:none;-webkit-appearance:none;padding-right:44px;cursor:pointer;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M2 2l6 6 6-6' fill='none' stroke='%231D1D1B' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 16px center}
+.input:focus,.select:focus{box-shadow:0 0 0 4px var(--yellow)}
+.input.is-error{border-color:var(--red)}
+.btn-pill{flex:none;height:52px;padding:0 24px;background:var(--red);color:var(--white);border:var(--bd);border-radius:999px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 var(--char)}
+.btn-pill:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--char)}
+.btn-line{flex:none;height:52px;padding:0 22px;background:#fff;border:var(--bd);border-radius:999px;font-weight:900;cursor:pointer}
+.btn-line:hover{background:var(--char);color:var(--cream)}
+
+.filters{position:sticky;top:0;z-index:20;background:var(--char);color:var(--cream);border-bottom:var(--bd)}
+.filters__in{display:flex;align-items:center;gap:12px;padding:12px 0}
+.filters__lb{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;white-space:nowrap}
+.filters .select{height:46px;max-width:360px;font-size:15px;color:var(--char)}
+.filters .btn-line{color:var(--char)}
+.filters .btn-line:hover{color:var(--cream)}
+.filters .btn-line{height:46px}
+.filters .btn-line:first-of-type{margin-left:auto}
+
+/* ---------- bands ---------- */
+.band{padding:56px 0 64px;border-bottom:var(--bd)}
+.band--paper{background:var(--paper)}
+.band--cream{background:var(--cream)}
+.sec-head{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.sec-no{font-family:var(--mono);font-size:18px;font-weight:800;background:var(--navy);color:var(--cream);border:var(--bd);border-radius:999px;padding:4px 16px;line-height:1.4}
+.sec-head h2{font-size:clamp(26px,3.6vw,38px);font-weight:900;line-height:1.2}
+.sec-en{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gray)}
+.sec-desc{font-weight:700;color:var(--gray);margin-bottom:28px}
+.card{position:relative;background:var(--white);border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);padding:28px 32px}
+.card-title{font-size:20px;font-weight:900;margin-bottom:4px}
+.card-sub{font-size:14px;font-weight:700;color:var(--gray);margin-bottom:20px}
+
+/* ---------- KPI tiles ---------- */
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.tile{border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);padding:20px 22px;background:var(--white);min-width:0}
+.tile--navy{background:var(--navy);color:var(--cream)}
+.tile--red{background:var(--red);color:var(--white)}
+.tile--y{background:var(--yellow)}
+.tile__lb{font-weight:900;font-size:15px}
+.tile__n{font-family:var(--mono);font-size:48px;font-weight:800;line-height:1.1;margin-top:8px;white-space:nowrap}
+.tile__n small{font-size:18px;margin-left:4px}
+.tile__ft{margin-top:8px;font-size:13px;font-weight:700;opacity:.85}
+
+/* ---------- distribution ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:22px;font-size:14px;font-weight:900}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:18px;height:18px;border:2px solid var(--char);border-radius:5px}
+.dist{display:grid;gap:26px}
+.dist-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px 24px;align-items:center}
+.dist-q{grid-column:1/-1;display:flex;align-items:flex-start;gap:12px;font-weight:900;font-size:17px;line-height:1.45}
+.q-tag{flex:none;font-family:var(--mono);font-weight:800;font-size:13px;background:var(--red);color:var(--white);border:2px solid var(--char);border-radius:999px;padding:1px 12px}
+.bar100{display:flex;gap:4px;height:48px}
+.seg{display:flex;align-items:center;justify-content:center;min-width:6px;border:2px solid var(--char);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:800;cursor:default;overflow:hidden;white-space:nowrap}
+.seg[data-v="1"],.seg[data-v="5"]{color:var(--white)}
+.dist-mean{text-align:right}
+.dist-mean b{font-family:var(--mono);font-size:34px;font-weight:800;line-height:1}
+.dist-mean span{display:block;font-size:13px;font-weight:700;color:var(--gray)}
+
+/* ---------- table ---------- */
+.table-wrap{border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);background:var(--white);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th,td{padding:14px 18px;text-align:left;border-bottom:2px solid var(--char);white-space:nowrap}
+th{background:var(--navy);color:var(--cream);font-weight:900;font-size:14px}
+th.r,td.r{text-align:right}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--cream)}
+tbody tr.on td{background:var(--yellow)}
+td{font-weight:700}
+td.num{font-family:var(--mono);font-size:15px}
+.minibar{display:flex;align-items:center;gap:10px}
+.minibar__t{width:110px;height:14px;border:2px solid var(--char);border-radius:999px;overflow:hidden;background:#fff}
+.minibar__f{height:100%;background:var(--navy)}
+.na{color:var(--muted)}
+.empty{padding:36px 18px;text-align:center;font-weight:900;color:var(--gray)}
+
+/* ---------- bars (triage / school) ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.hbars{display:grid;gap:12px}
+.hbar{display:grid;grid-template-columns:120px minmax(0,1fr) 64px;gap:14px;align-items:center}
+.hbar__lb{font-weight:900;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar__lb.mono{font-size:16px;letter-spacing:.06em}
+.hbar__t{height:30px}
+.hbar__f{height:100%;min-width:6px;background:var(--navy);border:2px solid var(--char);border-radius:0 8px 8px 0}
+.hbar__f.hl{background:var(--red)}
+.hbar__v{font-family:var(--mono);font-weight:800;text-align:right}
+.key-pill{display:inline-flex;align-items:center;height:24px;margin-left:8px;padding:0 10px;border:2px solid var(--char);border-radius:999px;background:var(--yellow);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:900;letter-spacing:0;vertical-align:middle}
+.big-stat{display:flex;align-items:baseline;gap:10px;margin-bottom:22px}
+.big-stat b{font-family:var(--mono);font-size:56px;font-weight:800;line-height:1}
+.big-stat span{font-weight:900;color:var(--gray)}
+.note{margin-top:16px;font-size:13px;font-weight:700;color:var(--gray)}
+
+/* ---------- feedback ---------- */
+.fb-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:24px}
+.fb-tools .input{max-width:360px;height:48px}
+.toggle{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 18px;border:var(--bd);border-radius:999px;background:#fff;font-weight:900;cursor:pointer;user-select:none}
+.toggle input{width:20px;height:20px;accent-color:var(--red)}
+.fb-col h3{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:20px;font-weight:900;margin-bottom:14px}
+.fb-col h3 span{font-family:var(--mono);font-size:14px;font-weight:800;background:var(--char);color:var(--cream);border-radius:999px;padding:2px 12px}
+.fb-list{display:grid;gap:12px;max-height:640px;overflow-y:auto;padding:4px 10px 10px 4px}
+.fb{background:#fff;border:var(--bd);border-radius:var(--r-lg);padding:14px 18px;box-shadow:4px 4px 0 var(--char)}
+.fb p{font-weight:700;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.fb small{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gray)}
+.fb mark{background:var(--yellow);color:inherit;padding:0 2px}
+
+/* ---------- admin ---------- */
+.band--admin{background:var(--navy);color:var(--cream)}
+.band--admin .sec-desc,.band--admin .sec-en{color:#B8BDCB}
+.band--admin .sec-no{background:var(--yellow);color:var(--char)}
+.admin{display:grid;grid-template-columns:400px minmax(0,1fr);gap:28px;align-items:start}
+.admin .card{color:var(--char);box-shadow:6px 6px 0 var(--yellow);min-width:0}
+.form .input{min-width:0}
+.form{display:grid;gap:18px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field-label{font-size:15px;font-weight:900}
+.field-label .req{color:var(--red)}
+.seg-pick{display:flex;gap:10px}
+.seg-pick label{flex:1}
+.seg-pick input{position:absolute;opacity:0;pointer-events:none}
+.seg-pick span{display:flex;align-items:center;justify-content:center;height:48px;border:var(--bd);border-radius:999px;font-weight:900;cursor:pointer;background:#fff}
+.seg-pick input:checked+span{background:var(--char);color:var(--cream)}
+.seg-pick input:focus-visible+span{outline:4px solid var(--yellow);outline-offset:2px}
+.form .btn-pill{width:100%;height:58px;font-size:18px}
+.form-note{font-size:13px;font-weight:700;color:var(--gray)}
+.admin .table-wrap{box-shadow:6px 6px 0 var(--yellow);color:var(--char)}
+.admin table{min-width:560px}
+.admin tbody tr{cursor:default}
+.admin tbody tr:hover td{background:transparent}
+.sw{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border:2px solid var(--char);border-radius:999px;font-weight:900;font-size:14px;cursor:pointer;background:#fff}
+.sw i{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.sw.on{background:var(--yellow)}
+.sw.on i{background:var(--red)}
+.sw:disabled{opacity:.5;cursor:wait}
+.code{font-family:var(--mono);font-size:13px;color:var(--gray)}
+.pw-hint{margin-top:22px;padding:16px 20px;border:2px dashed #B8BDCB;border-radius:var(--r-lg);font-weight:700;font-size:14px;line-height:1.7}
+.pw-hint b{color:var(--yellow)}
+
+.admin-lock{max-width:560px;color:var(--char);box-shadow:6px 6px 0 var(--yellow)}
+.lock-row{display:flex;gap:10px}
+.lock-row .input{flex:1;min-width:0}
+@media (max-width:720px){ .lock-row{flex-direction:column} }
+
+/* ---------- misc ---------- */
+.state{padding:96px 0;text-align:center;background:var(--paper);border-bottom:var(--bd)}
+.state b{display:block;font-size:28px;font-weight:900}
+.state p{margin-top:8px;font-weight:700;color:var(--gray)}
+.foot{background:var(--char);color:var(--cream)}
+.foot__in{display:flex;justify-content:space-between;gap:16px;padding:22px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em}
+.tip{position:fixed;z-index:70;pointer-events:none;background:var(--char);color:var(--cream);border:2px solid var(--yellow);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:900;line-height:1.5;max-width:260px}
+.toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,160%);max-width:calc(100% - 32px);background:var(--char);color:var(--cream);border:3px solid var(--yellow);border-radius:999px;padding:14px 26px;font-weight:900;transition:transform .25s}
+.toast:not(.show){visibility:hidden}
+.toast.show{transform:translate(-50%,0)}
+
+@media (max-width:1080px){ .tiles{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:960px){ .admin{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:860px){
+  .hero__in{grid-template-columns:1fr;gap:32px;padding:44px 0 40px}
+  .hero-card{max-width:460px}
+  .grid2{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  :root{--gutter:16px}
+  .topline__in > span:last-child,.tl-en{display:none}
+  .band{padding:44px 0 52px}
+  .sec-en{display:none}
+  .card{padding:22px 18px}
+  .tiles{grid-template-columns:1fr 1fr;gap:14px}
+  .tile{padding:16px}
+  .tile__n{font-size:34px}
+  .tiles .tile:first-child{grid-column:1/-1}
+  .filters__in{flex-wrap:wrap}
+  .filters .select{max-width:none;flex:1 1 140px}
+  .filters__lb{width:100%}
+  .filters .btn-line,.filters .btn-line:first-of-type{margin-left:0;flex:1}
+  .dist-row{grid-template-columns:1fr 88px;gap:8px 12px}
+  .dist-mean b{font-size:26px}
+  .bar100{height:40px}
+  .seg{font-size:11px}
+  .hbar{grid-template-columns:96px minmax(0,1fr) 52px;gap:10px}
+  .hero-card__row{flex-direction:column}
+  .fb-tools .input{max-width:none}
+  .foot__in{flex-direction:column;gap:4px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo" id="demoBar" hidden>預覽模式｜目前顯示的是範例資料</div>
+
+<header class="topline">
+  <div class="wrap topline__in">
+    <span><span class="tl-en">CHI MEI MEDICAL CENTER · </span>教學部實習醫學生訓練組｜臨床技能中心</span>
+    <span>COMMAND DASHBOARD · UGY-DF</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero__in">
+    <div>
+      <p class="kicker">DISASTER FRONTLINE // COMMAND DASHBOARD</p>
+      <h1 class="hero__title">成效<span>儀表板</span></h1>
+      <p class="hero__sub">災難最前線｜實習醫學生（UGY）課程滿意度與報到回收</p>
+    </div>
+    <aside class="hero-card" id="infoCard">
+      <p class="hero-card__lb">DATA SYNC · 資料更新</p>
+      <p class="hero-card__big" id="genTime">—</p>
+      <p class="hero-card__meta" id="genMeta"></p>
+    </aside>
+  </div>
+</section>
+<div class="hazard" aria-hidden="true"></div>
+
+<section class="state" id="stateView">
+  <div class="wrap"><b id="stateT">資料載入中…</b><p id="stateP">正在讀取最新的問卷與報到資料。</p></div>
+</section>
+
+<div id="dash" hidden>
+  <nav class="filters">
+    <div class="wrap filters__in">
+      <span class="filters__lb">FILTER</span>
+      <select class="select" id="fSession" aria-label="梯次"></select>
+      <select class="select" id="fSchool" aria-label="學校"></select>
+      <button type="button" class="btn-line" id="adminJump">梯次管理</button>
+      <button type="button" class="btn-line" id="refreshBtn">重新整理</button>
+    </div>
+  </nav>
+
+  <!-- 01 總覽 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">01</span><h2>任務總覽</h2><span class="sec-en">OVERVIEW</span></div>
+      <p class="sec-desc" id="scopeText"></p>
+      <div class="tiles">
+        <div class="tile tile--navy"><p class="tile__lb">問卷回收</p><p class="tile__n"><span id="kN">0</span><small>份</small></p><p class="tile__ft" id="kNft"></p></div>
+        <div class="tile"><p class="tile__lb">報到人數</p><p class="tile__n"><span id="kIn">0</span><small>人</small></p><p class="tile__ft" id="kInft"></p></div>
+        <div class="tile tile--y"><p class="tile__lb">回收率</p><p class="tile__n"><span id="kRate">—</span><small>%</small></p><p class="tile__ft">報到者中已填問卷</p></div>
+        <div class="tile tile--red"><p class="tile__lb">整體平均</p><p class="tile__n"><span id="kMean">—</span><small>/ 5</small></p><p class="tile__ft">Q1–Q4 全部評分</p></div>
+        <div class="tile"><p class="tile__lb">檢傷正確率</p><p class="tile__n"><span id="kTri">—</span><small>%</small></p><p class="tile__ft" id="kTrift"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 各題評價 -->
+  <section class="band band--cream">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">02</span><h2>各題評價分布</h2><span class="sec-en">RATING</span></div>
+      <p class="sec-desc">每條長條代表該題 100% 的回覆，依 1–5 分切段；右側為平均分數與 4–5 分占比。</p>
+      <div class="card">
+        <div class="legend" id="legend"></div>
+        <div class="dist" id="dist"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 梯次 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">03</span><h2>梯次報到與回收</h2><span class="sec-en">SESSIONS</span></div>
+      <p class="sec-desc">點選任一梯次即可篩選整份儀表板，再點一次取消。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>課程日期</th><th>梯次</th><th class="r">報到</th><th class="r">回收</th><th>回收率</th><th class="r">平均</th><th class="r">檢傷正確率</th></tr></thead>
+          <tbody id="sessRows"></tbody>
+        </table>
+      </div>
+      <p class="note">無報到紀錄的梯次（例如由 Google 表單匯入的歷史資料）回收率顯示為「—」。</p>
+    </div>
+  </section>
+
+  <!-- 04 檢傷 & 學校 -->
+  <section class="band band--cream">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">04</span><h2>檢傷題與學員組成</h2><span class="sec-en">TRIAGE · SCHOOLS</span></div>
+      <p class="sec-desc">檢傷排序的作答分布，以及各校填答人數與平均分數。</p>
+      <div class="grid2">
+        <div class="card">
+          <p class="card-title">檢傷排序作答</p>
+          <p class="card-sub">Q5｜依檢傷顏色決定四位病患的處置順序</p>
+          <div class="big-stat"><b id="triRate">—</b><span id="triRateT">% 答對</span></div>
+          <div class="hbars" id="triBars"></div>
+          <p class="note" id="triNote"></p>
+        </div>
+        <div class="card">
+          <p class="card-title">各校填答人數</p>
+          <p class="card-sub">長條為人數，右側為該校 Q1–Q4 平均</p>
+          <div class="hbars" id="schoolBars"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 回饋 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">05</span><h2>學員回饋</h2><span class="sec-en">DEBRIEF</span></div>
+      <p class="sec-desc">開放式回答原文，可用關鍵字搜尋。</p>
+      <div class="fb-tools">
+        <input class="input" id="fbSearch" type="search" placeholder="搜尋關鍵字，例如：檢傷、指揮官、時間">
+        <label class="toggle"><input type="checkbox" id="hideNone" checked> 隱藏「無」等空白回覆</label>
+      </div>
+      <div class="grid2">
+        <div class="fb-col"><h3>最有收穫的部分 <span id="gainN">0</span></h3><div class="fb-list" id="gainList"></div></div>
+        <div class="fb-col"><h3>需要改進的地方 <span id="impN">0</span></h3><div class="fb-list" id="impList"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 梯次管理 -->
+  <section class="band band--admin" id="adminBand">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">06</span><h2>梯次管理</h2><span class="sec-en">SESSION CONTROL</span></div>
+      <p class="sec-desc">新增課程梯次，或切換開放狀態。只有「開放」的梯次會出現在問卷與報到頁的選單中。</p>
+      <div class="card admin-lock" id="lockCard">
+        <p class="card-title">管理者登入</p>
+        <p class="card-sub">新增或開關梯次需要管理密碼（與報到站「現場看板」共用，可在試算表「系統設定」工作表修改）。</p>
+        <div class="lock-row">
+          <input class="input" id="key" type="password" autocomplete="off" placeholder="請輸入管理密碼">
+          <button type="button" class="btn-pill" id="unlockBtn">登入</button>
+        </div>
+      </div>
+      <div class="admin" id="adminBody" hidden>
+        <div class="card">
+          <p class="card-title">新增梯次</p>
+          <p class="card-sub">梯次代碼會依日期自動產生</p>
+          <div class="form">
+            <label class="field">
+              <span class="field-label">課程日期 <span class="req">*</span></span>
+              <input class="input" id="aDate" type="date">
+            </label>
+            <label class="field">
+              <span class="field-label">梯次名稱 <span class="req">*</span></span>
+              <input class="input" id="aName" type="text" maxlength="60" placeholder="例如：災難最前線 第3梯次">
+            </label>
+            <div class="field">
+              <span class="field-label">開放狀態</span>
+              <div class="seg-pick" role="radiogroup" aria-label="開放狀態">
+                <label><input type="radio" name="aOpen" value="1" checked><span>立即開放</span></label>
+                <label><input type="radio" name="aOpen" value="0"><span>先關閉</span></label>
+              </div>
+            </div>
+            <label class="field">
+              <span class="field-label">備註</span>
+              <input class="input" id="aNote" type="text" maxlength="100" placeholder="選填，例如：中山醫第二組">
+            </label>
+            <button type="button" class="btn-pill" id="addBtn">新增梯次 →</button>
+            <p class="form-note">同一天新增第二個梯次時，代碼會自動加上 -2、-3。</p>
+          </div>
+        </div>
+        <div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>課程日期</th><th>梯次名稱</th><th>梯次代碼</th><th>開放狀態</th></tr></thead>
+              <tbody id="adminRows"></tbody>
+            </table>
+          </div>
+          <div class="pw-hint">
+            <b>管理密碼</b>放在試算表的「系統設定」工作表 B 欄，直接修改儲存格即可，立即生效、不需重新部署。<br>
+            報到站「現場看板」與本儀表板共用同一組密碼；同一張表也可以修改<b>檢傷標準答案</b>。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <span>奇美醫學中心 教學部實習醫學生訓練組｜臨床技能中心</span>
+    <span>UGY · DISASTER FRONTLINE · DASHBOARD</span>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================= 設定區 ================= */
+const CONFIG = {
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbwLuUrYxrqGdlOXaFSDBETDdEkt8LgkeeRWrWcotNgGeS46MAkDimWOEr1lH8PbnFJs/exec'
+};
+const QUESTIONS = [
+  { id: 'q1', no: 'Q1', text: '本課程是否幫助您理解災難應變的概念？' },
+  { id: 'q2', no: 'Q2', text: '課程是否增進您在急救情境下的團隊合作？' },
+  { id: 'q3', no: 'Q3', text: '課程是否讓您更能體會臨場壓力下的判斷與決策？' },
+  { id: 'q4', no: 'Q4', text: '本次課程時間分配（講解 vs. 演練）是否合適？' }
+];
+const SCALE = ['1 非常不同意／不合適', '2 不同意／不合適', '3 普通', '4 同意／合適', '5 非常同意／合適'];
+/* ========================================= */
+
+const DEMO = !CONFIG.GAS_URL || new URLSearchParams(location.search).has('demo');
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k) { try { return sessionStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch (_) {} }
+};
+const state = { data: null, key: '', session: '', school: '' };
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ---------- 範例資料（預覽模式） ---------- */
+function demoData() {
+  const sch = ['甲醫學大學', '乙大學後醫學系', '丙醫學大學'];
+  const gains = ['檢傷分類與團隊溝通', '模擬演練讓我理解指揮架構', '學會在短時間內分工合作', '無'];
+  const imps = ['無', '希望演練時間再長一點', '指揮官角色可以更明確', '無，非常實用！'];
+  const tri = ['ABCD', 'ABCD', 'ABCD', 'DABC', 'ABCD', 'BACD'];
+  const sessions = [
+    { code: 'DF-DEMO-1', date: '2026/09/10', name: '第1梯次', open: false },
+    { code: 'DF-DEMO-2', date: '2026/10/22', name: '第2梯次', open: true }
+  ];
+  const surveys = [], checkins = [];
+  let k = 0;
+  sessions.forEach((s, si) => {
+    for (let i = 0; i < 12; i++) {
+      k++;
+      const school = sch[i % 3], name = '學員' + String(k).padStart(2, '0');
+      const r = v => Math.max(1, Math.min(5, v));
+      const filled = !(si === 1 && i > 8);
+      checkins.push({ session: s.code, date: s.date, school, grade: '六年級', name, time: s.date + ' 13:2' + (i % 10) + ':00', surveyed: filled });
+      if (filled) surveys.push({
+        session: s.code, date: s.date, school, grade: '六年級', name, time: s.date + ' 17:0' + (i % 10) + ':00',
+        q1: r(5 - (i % 5 === 0)), q2: r(5 - (i % 4 === 0)), q3: r(5 - (i % 6 === 0) * 2), q4: r(4 + (i % 2)),
+        triage: tri[i % tri.length], correct: tri[i % tri.length] === 'ABCD' ? '正確' : '錯誤',
+        gain: gains[i % 4], improve: imps[i % 4], checkedIn: true
+      });
+    }
+  });
+  return { ok: true, sessions, surveys, checkins, answer: 'ABCD', generated: new Date().toLocaleString('zh-TW', { hour12: false }) };
+}
+
+async function apiPost(payload) {
+  if (DEMO) {
+    await new Promise(r => setTimeout(r, 400));
+    const ss = state.data.sessions;
+    if (payload.action === 'addSession') {
+      const base = 'DF-' + payload.date.replace(/\//g, '');
+      let code = base, n = 2; while (ss.some(s => s.code === code)) code = base + '-' + (n++);
+      ss.push({ code, date: payload.date, name: payload.name, open: payload.open });
+    } else if (payload.action === 'setSession') {
+      const t = ss.find(s => s.code === payload.code); if (t) t.open = payload.open;
+    }
+    return { ok: true, sessions: ss.slice().sort((a, b) => (a.date < b.date ? 1 : -1)) };
+  }
+  const r = await fetch(CONFIG.GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, key: state.key }) });
+  return r.json();
+}
+
+async function fetchData() {
+  if (DEMO) return demoData();
+  const qs = new URLSearchParams({ action: 'dashboard' }).toString();
+  const r = await fetch(CONFIG.GAS_URL + '?' + qs);
+  return r.json();
+}
+
+/* ---------- helpers ---------- */
+const mean = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+const f1 = v => v == null ? '—' : v.toFixed(2);
+const pct = (a, b) => b ? Math.round(a / b * 100) : null;
+const scoresOf = rows => rows.flatMap(r => QUESTIONS.map(q => r[q.id]).filter(v => v >= 1 && v <= 5));
+const isJudged = r => r.correct === '正確' || r.correct === '錯誤';
+const NONE_RE = /^(無|沒有|沒|没有|無意見|暫無|目前沒有|沒意見|none|no|na|n\/a|nil|-|—|x)$/i;
+const isNone = t => !t || NONE_RE.test(t.replace(/[\s，,。.!！～~、]/g, ''));
+
+function sessionList() {
+  const d = state.data, map = new Map();
+  (d.sessions || []).forEach(s => map.set(s.code, { ...s }));
+  [...d.surveys, ...d.checkins].forEach(r => {
+    if (r.session && !map.has(r.session)) map.set(r.session, { code: r.session, date: r.date, name: r.session });
+  });
+  return [...map.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+function scoped() {
+  const d = state.data;
+  const ok = r => (!state.session || r.session === state.session) && (!state.school || r.school === state.school);
+  return { surveys: d.surveys.filter(ok), checkins: d.checkins.filter(ok) };
+}
+
+/* ---------- tooltip ---------- */
+const tip = $('#tip');
+document.addEventListener('mousemove', e => {
+  const el = e.target.closest('[data-tip]');
+  if (!el) { tip.hidden = true; return; }
+  tip.innerHTML = el.dataset.tip; tip.hidden = false;
+  const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8);
+  const y = e.clientY + 18 + tip.offsetHeight > innerHeight ? e.clientY - tip.offsetHeight - 12 : e.clientY + 18;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+});
+
+/* ---------- render ---------- */
+function renderFilters() {
+  const sl = sessionList();
+  $('#fSession').innerHTML = '<option value="">全部梯次</option>' +
+    sl.map(s => `<option value="${esc(s.code)}">${esc(s.date)}｜${esc(s.name)}</option>`).join('');
+  const schools = [...new Set([...state.data.surveys, ...state.data.checkins].map(r => r.school).filter(Boolean))].sort();
+  $('#fSchool').innerHTML = '<option value="">全部學校</option>' + schools.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  $('#fSession').value = state.session; $('#fSchool').value = state.school;
+}
+
+function renderKPI(sv, ck) {
+  const sl = sessionList();
+  const sName = state.session ? (sl.find(s => s.code === state.session) || {}) : null;
+  $('#scopeText').textContent = `目前範圍：${sName ? `${sName.date}｜${sName.name}` : `全部梯次（共 ${new Set(sv.map(r => r.session)).size} 梯次有回覆）`}${state.school ? '・' + state.school : ''}`;
+  $('#kN').textContent = sv.length;
+  $('#kNft').textContent = `${new Set(sv.map(r => r.school)).size} 所學校`;
+  $('#kIn').textContent = ck.length;
+  $('#kInft').textContent = ck.length ? `未填問卷 ${ck.filter(r => !r.surveyed).length} 人` : '此範圍無報到紀錄';
+  const rate = pct(ck.filter(r => r.surveyed).length, ck.length);
+  $('#kRate').textContent = rate == null ? '—' : rate;
+  $('#kMean').textContent = f1(mean(scoresOf(sv)));
+  const judged = sv.filter(isJudged);
+  const tr = pct(judged.filter(r => r.correct === '正確').length, judged.length);
+  $('#kTri').textContent = tr == null ? '—' : tr;
+  $('#kTrift').textContent = `可判讀 ${judged.length} 份`;
+}
+
+function renderDist(sv) {
+  $('#legend').innerHTML = SCALE.map((t, i) => `<span><i style="background:var(--s${i + 1})"></i>${t}</span>`).join('');
+  $('#dist').innerHTML = QUESTIONS.map(q => {
+    const vals = sv.map(r => r[q.id]).filter(v => v >= 1 && v <= 5);
+    const n = vals.length;
+    const counts = [1, 2, 3, 4, 5].map(v => vals.filter(x => x === v).length);
+    const top = pct(counts[3] + counts[4], n);
+    const segs = n ? counts.map((c, i) => {
+      if (!c) return '';
+      const p = c / n * 100;
+      return `<div class="seg" data-v="${i + 1}" style="flex:${c} 1 0;background:var(--s${i + 1})"
+        data-tip="${q.no}｜${i + 1} 分<br>${c} 人・${p.toFixed(0)}%">${p >= 12 ? Math.round(p) + '%' : ''}</div>`;
+    }).join('') : '<div class="seg" style="flex:1;background:#fff;color:var(--muted)">尚無資料</div>';
+    return `<div class="dist-row">
+      <p class="dist-q"><span class="q-tag">${q.no}</span>${q.text}</p>
+      <div class="bar100" role="img" aria-label="${q.no} 分布：${counts.map((c, i) => `${i + 1}分 ${c}人`).join('，')}">${segs}</div>
+      <div class="dist-mean"><b>${f1(mean(vals))}</b><span>4–5 分 ${top == null ? '—' : top + '%'}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderSessions() {
+  const d = state.data;
+  const bySchool = r => !state.school || r.school === state.school;
+  const rows = sessionList().map(s => {
+    const sv = d.surveys.filter(r => r.session === s.code && bySchool(r));
+    const ck = d.checkins.filter(r => r.session === s.code && bySchool(r));
+    const judged = sv.filter(isJudged);
+    return { s, n: sv.length, inN: ck.length, rate: pct(ck.filter(r => r.surveyed).length, ck.length),
+      m: mean(scoresOf(sv)), tri: pct(judged.filter(r => r.correct === '正確').length, judged.length) };
+  }).filter(r => r.n || r.inN);
+  $('#sessRows').innerHTML = rows.length ? rows.map(r => `
+    <tr data-code="${esc(r.s.code)}" class="${r.s.code === state.session ? 'on' : ''}">
+      <td class="num">${esc(r.s.date)}</td><td>${esc(r.s.name)}</td>
+      <td class="num r">${r.inN || '<span class="na">—</span>'}</td><td class="num r">${r.n}</td>
+      <td>${r.rate == null ? '<span class="na">—</span>' :
+        `<div class="minibar"><div class="minibar__t"><div class="minibar__f" style="width:${r.rate}%"></div></div><span class="num">${r.rate}%</span></div>`}</td>
+      <td class="num r">${f1(r.m)}</td><td class="num r">${r.tri == null ? '<span class="na">—</span>' : r.tri + '%'}</td>
+    </tr>`).join('') : '<tr><td colspan="7" class="empty">目前沒有資料</td></tr>';
+}
+
+function renderTriage(sv) {
+  const ans = state.data.answer || 'ABCD';
+  const judged = sv.filter(isJudged);
+  const rate = pct(judged.filter(r => r.correct === '正確').length, judged.length);
+  $('#triRate').textContent = rate == null ? '—' : rate;
+  const map = new Map();
+  sv.forEach(r => {
+    const k = isJudged(r) ? r.triage : '無法判讀';
+    map.set(k, (map.get(k) || 0) + 1);
+  });
+  const list = [...map.entries()].sort((a, b) => b[1] - a[1]);
+  const max = Math.max(1, ...list.map(x => x[1]));
+  $('#triBars').innerHTML = list.length ? list.map(([k, c]) => `
+    <div class="hbar" data-tip="${esc(k)}｜${c} 人・${Math.round(c / sv.length * 100)}%">
+      <span class="hbar__lb ${k === '無法判讀' ? '' : 'mono'}">${esc(k)}${k === ans ? '<span class="key-pill">答案</span>' : ''}</span>
+      <div class="hbar__t"><div class="hbar__f ${k === ans ? 'hl' : ''}" style="width:${c / max * 100}%"></div></div>
+      <span class="hbar__v">${c}</span>
+    </div>`).join('') : '<p class="empty">尚無資料</p>';
+  const odd = map.get('無法判讀') || 0;
+  $('#triNote').textContent = `標準答案：${ans}（可在 Code.gs 的 TRIAGE_ANSWER 修改）` + (odd ? `；另有 ${odd} 份為舊表單的自由填寫，未計入正確率。` : '');
+}
+
+function renderSchools(sv) {
+  const map = new Map();
+  sv.forEach(r => { const k = r.school || '未填'; if (!map.has(k)) map.set(k, []); map.get(k).push(r); });
+  const list = [...map.entries()].sort((a, b) => b[1].length - a[1].length);
+  const max = Math.max(1, ...list.map(x => x[1].length));
+  $('#schoolBars').innerHTML = list.length ? list.map(([k, rows]) => `
+    <div class="hbar" data-tip="${esc(k)}<br>${rows.length} 人・平均 ${f1(mean(scoresOf(rows)))}">
+      <span class="hbar__lb" title="${esc(k)}">${esc(k)}</span>
+      <div class="hbar__t"><div class="hbar__f" style="width:${rows.length / max * 100}%"></div></div>
+      <span class="hbar__v">${rows.length}<br><small class="na">${f1(mean(scoresOf(rows)))}</small></span>
+    </div>`).join('') : '<p class="empty">尚無資料</p>';
+}
+
+function renderFeedback(sv) {
+  const kw = $('#fbSearch').value.trim();
+  const hide = $('#hideNone').checked;
+  const hl = t => {
+    const s = esc(t);
+    return kw ? s.split(esc(kw)).join(`<mark>${esc(kw)}</mark>`) : s;
+  };
+  const build = (field, listEl, nEl) => {
+    const items = sv.filter(r => r[field] && !(hide && isNone(r[field])) && (!kw || r[field].includes(kw)))
+      .sort((a, b) => (a.time < b.time ? 1 : -1));
+    $(nEl).textContent = items.length;
+    $(listEl).innerHTML = items.length ? items.map(r => `
+      <div class="fb"><p>${hl(r[field])}</p><small>${esc(r.date)}・${esc(r.school)}・${esc(r.grade)}</small></div>`).join('')
+      : '<p class="empty">沒有符合的回覆</p>';
+  };
+  build('gain', '#gainList', '#gainN');
+  build('improve', '#impList', '#impN');
+}
+
+/* ---------- 梯次管理 ---------- */
+function renderAdmin() {
+  const list = (state.data.sessions || []).slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+  $('#adminRows').innerHTML = list.length ? list.map(s => `
+    <tr><td class="num">${esc(s.date)}</td><td>${esc(s.name)}</td><td class="code">${esc(s.code)}</td>
+      <td><button type="button" class="sw ${s.open ? 'on' : ''}" data-code="${esc(s.code)}" data-open="${s.open ? 1 : 0}"
+        aria-pressed="${s.open}"><i></i>${s.open ? '開放中' : '已關閉'}</button></td></tr>`).join('')
+    : '<tr><td colspan="4" class="empty">尚未建立任何梯次</td></tr>';
+}
+async function addSession() {
+  const date = $('#aDate').value, name = $('#aName').value.trim();
+  [['#aDate', date], ['#aName', name]].forEach(([s, v]) => $(s).classList.toggle('is-error', !v));
+  if (!date || !name) { toast('請填寫課程日期與梯次名稱'); return; }
+  const btn = $('#addBtn'); btn.disabled = true;
+  try {
+    const r = await apiPost({ action: 'addSession', date: date.replace(/-/g, '/'), name,
+      open: document.querySelector('input[name="aOpen"]:checked').value === '1', note: $('#aNote').value.trim() });
+    if (!r.ok) throw new Error(r.message || '新增失敗');
+    state.data.sessions = r.sessions;
+    $('#aName').value = ''; $('#aNote').value = '';
+    renderAdmin(); renderFilters();
+    toast(`已新增梯次：${name}`);
+  } catch (e) { toast(e.message || '網路異常，請稍後再試'); }
+  finally { btn.disabled = false; }
+}
+async function toggleSession(btn) {
+  const open = btn.dataset.open !== '1';
+  btn.disabled = true;
+  try {
+    const r = await apiPost({ action: 'setSession', code: btn.dataset.code, open });
+    if (!r.ok) throw new Error(r.message || '更新失敗');
+    state.data.sessions = r.sessions;
+    renderAdmin(); renderFilters();
+    toast(open ? '已開放此梯次' : '已關閉此梯次');
+  } catch (e) { toast(e.message || '網路異常，請稍後再試'); btn.disabled = false; }
+}
+
+function renderAll() {
+  const { surveys, checkins } = scoped();
+  renderKPI(surveys, checkins);
+  renderDist(surveys);
+  renderSessions();
+  renderTriage(surveys);
+  renderSchools(surveys);
+  renderFeedback(surveys);
+}
+
+/* ---------- load ---------- */
+async function load(silent) {
+  try {
+    const r = await fetchData();
+    if (!r.ok) throw new Error(r.message || '讀取失敗');
+    if (!Array.isArray(r.surveys)) throw new Error('後端尚未更新：請在 Apps Script 以「新版本」重新部署');
+    state.data = r;
+    $('#genTime').textContent = r.generated || '';
+    $('#genMeta').textContent = `問卷 ${r.surveys.length} 份・報到 ${r.checkins.length} 筆・梯次 ${sessionList().length} 個`;
+    $('#stateView').hidden = true; $('#dash').hidden = false;
+    renderFilters(); renderAll(); renderAdmin();
+    if (!silent) toast('資料已更新');
+  } catch (e) {
+    $('#stateT').textContent = '資料讀取失敗';
+    $('#stateP').textContent = e.message || '網路異常，請稍後重新整理';
+    toast(e.message || '網路異常，請稍後再試');
+  }
+}
+
+async function login(key, silent) {
+  if (!key) { $('#key').classList.add('is-error'); if (!silent) toast('請輸入管理密碼'); return; }
+  try {
+    let ok = DEMO;
+    if (!DEMO) {
+      const r = await (await fetch(CONFIG.GAS_URL + '?' + new URLSearchParams({ action: 'allSessions', key }))).json();
+      ok = r.ok;
+      if (ok && state.data) { state.data.sessions = r.sessions; renderFilters(); }
+    }
+    if (!ok) throw new Error('密碼錯誤');
+    state.key = key; store.set('df_key', key);
+    $('#lockCard').hidden = true; $('#adminBody').hidden = false;
+    renderAdmin();
+    if (!silent) toast('已登入梯次管理');
+  } catch (e) {
+    $('#key').classList.add('is-error');
+    if (!silent) toast(e.message || '網路異常，請稍後再試');
+  }
+}
+
+function init() {
+  $('#demoBar').hidden = !DEMO;
+  $('#unlockBtn').addEventListener('click', () => login($('#key').value.trim()));
+  $('#key').addEventListener('keydown', e => { if (e.key === 'Enter') $('#unlockBtn').click(); });
+  $('#key').addEventListener('input', () => $('#key').classList.remove('is-error'));
+  $('#refreshBtn').addEventListener('click', () => load());
+  $('#fSession').addEventListener('change', e => { state.session = e.target.value; renderAll(); });
+  $('#fSchool').addEventListener('change', e => { state.school = e.target.value; renderAll(); });
+  $('#sessRows').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-code]'); if (!tr) return;
+    state.session = state.session === tr.dataset.code ? '' : tr.dataset.code;
+    $('#fSession').value = state.session; renderAll();
+    window.scrollTo({ top: $('#dash').offsetTop, behavior: 'smooth' });
+  });
+  $('#adminJump').addEventListener('click', () => { window.scrollTo({ top: $('#adminBand').offsetTop - 70, behavior: 'smooth' }); if (!$('#lockCard').hidden) setTimeout(() => $('#key').focus(), 400); });
+  $('#addBtn').addEventListener('click', addSession);
+  ['#aDate', '#aName'].forEach(s => $(s).addEventListener('input', () => $(s).classList.remove('is-error')));
+  $('#adminRows').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) toggleSession(b); });
+  $('#fbSearch').addEventListener('input', () => renderFeedback(scoped().surveys));
+  $('#hideNone').addEventListener('change', () => renderFeedback(scoped().surveys));
+  load(true).then(() => {
+    const saved = store.get('df_key');
+    if (saved) { $('#key').value = saved; login(saved, true); }
+  });
+}
+init();
+</script>
+</body>
+</html>
