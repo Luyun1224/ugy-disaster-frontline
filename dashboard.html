@@ -31,7 +31,14 @@ button,input,select{font:inherit;color:inherit}
 
 .demo{background:var(--yellow);border-bottom:var(--bd);font-weight:900;font-size:14px;text-align:center;padding:8px 16px}
 .topline{background:var(--red);color:var(--white);border-bottom:var(--bd)}
-.topline__in{display:flex;justify-content:space-between;gap:16px;padding:10px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em}
+.topline__in{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:52px;padding:8px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em}
+.tl-act{display:flex;align-items:center;gap:8px;flex:none}
+.tl-btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;background:var(--white);color:var(--char);border:2px solid var(--char);border-radius:999px;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:900;letter-spacing:0;cursor:pointer;box-shadow:3px 3px 0 var(--char)}
+.tl-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--char)}
+.tl-btn i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.tl-btn.on{background:var(--yellow)}
+.tl-btn.on i{background:var(--red)}
+.tl-btn--ghost{background:transparent;color:var(--white);border-color:var(--white);box-shadow:none}
 
 /* ---------- hero ---------- */
 .hero{background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
@@ -67,7 +74,7 @@ button,input,select{font:inherit;color:inherit}
 .filters .btn-line{color:var(--char)}
 .filters .btn-line:hover{color:var(--cream)}
 .filters .btn-line{height:46px}
-.filters .btn-line:first-of-type{margin-left:auto}
+.filters .btn-line{margin-left:auto}
 
 /* ---------- bands ---------- */
 .band{padding:56px 0 64px;border-bottom:var(--bd)}
@@ -156,11 +163,8 @@ td.num{font-family:var(--mono);font-size:15px}
 .fb mark{background:var(--yellow);color:inherit;padding:0 2px}
 
 /* ---------- admin ---------- */
-.band--admin{background:var(--navy);color:var(--cream)}
-.band--admin .sec-desc,.band--admin .sec-en{color:#B8BDCB}
-.band--admin .sec-no{background:var(--yellow);color:var(--char)}
-.admin{display:grid;grid-template-columns:400px minmax(0,1fr);gap:28px;align-items:start}
-.admin .card{color:var(--char);box-shadow:6px 6px 0 var(--yellow);min-width:0}
+.admin{display:grid;gap:24px}
+.admin .card{color:var(--char);min-width:0;padding:24px}
 .form .input{min-width:0}
 .form{display:grid;gap:18px}
 .field{display:flex;flex-direction:column;gap:8px}
@@ -174,8 +178,8 @@ td.num{font-family:var(--mono);font-size:15px}
 .seg-pick input:focus-visible+span{outline:4px solid var(--yellow);outline-offset:2px}
 .form .btn-pill{width:100%;height:58px;font-size:18px}
 .form-note{font-size:13px;font-weight:700;color:var(--gray)}
-.admin .table-wrap{box-shadow:6px 6px 0 var(--yellow);color:var(--char)}
-.admin table{min-width:560px}
+.admin .table-wrap{color:var(--char)}
+.admin table{min-width:480px}
 .admin tbody tr{cursor:default}
 .admin tbody tr:hover td{background:transparent}
 .sw{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border:2px solid var(--char);border-radius:999px;font-weight:900;font-size:14px;cursor:pointer;background:#fff}
@@ -184,13 +188,51 @@ td.num{font-family:var(--mono);font-size:15px}
 .sw.on i{background:var(--red)}
 .sw:disabled{opacity:.5;cursor:wait}
 .code{font-family:var(--mono);font-size:13px;color:var(--gray)}
-.pw-hint{margin-top:22px;padding:16px 20px;border:2px dashed #B8BDCB;border-radius:var(--r-lg);font-weight:700;font-size:14px;line-height:1.7}
-.pw-hint b{color:var(--yellow)}
+.pw-hint{padding:16px 20px;border:2px dashed var(--char);border-radius:var(--r-lg);font-weight:700;font-size:14px;line-height:1.7;background:var(--cream)}
+.pw-hint b{color:var(--red-dk)}
 
-.admin-lock{max-width:560px;color:var(--char);box-shadow:6px 6px 0 var(--yellow)}
 .lock-row{display:flex;gap:10px}
 .lock-row .input{flex:1;min-width:0}
-@media (max-width:720px){ .lock-row{flex-direction:column} }
+
+/* ---------- modal & drawer ---------- */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(14,27,61,.72)}
+.modal{position:fixed;inset:0;z-index:51;display:grid;place-items:center;padding:20px}
+.modal__card{width:min(480px,100%);background:var(--white);border:var(--bd);border-radius:var(--r-xl);box-shadow:8px 8px 0 var(--yellow);overflow:hidden}
+.modal__top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
+.modal__top p{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--yellow)}
+.modal__top h3{font-size:24px;font-weight:900;line-height:1.3}
+.modal__body{padding:24px}
+.modal__body .card-sub{margin-bottom:16px}
+.x{flex:none;width:40px;height:40px;display:grid;place-items:center;border:2px solid currentColor;border-radius:50%;background:transparent;color:inherit;font-size:20px;font-weight:900;cursor:pointer}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:51;width:min(620px,100%);display:flex;flex-direction:column;background:var(--paper);border-left:var(--bd)}
+.drawer__head{display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
+.drawer__head h3{font-size:26px;font-weight:900;line-height:1.2}
+.drawer__head p{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--yellow)}
+.drawer__head .grow{flex:1}
+.drawer__head .tl-btn--ghost{border-color:var(--cream);color:var(--cream)}
+.drawer__body{flex:1;overflow-y:auto;padding:24px}
+body.locked{overflow:hidden}
+
+/* ---------- roster ---------- */
+.lock-note{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.lock-note p{font-weight:900;font-size:18px}
+.lock-note span{display:block;font-size:14px;font-weight:700;color:var(--gray)}
+.r-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.r-tile{border:var(--bd);border-radius:var(--r-lg);padding:14px 18px;background:var(--white)}
+.r-tile p{font-weight:900;font-size:14px}
+.r-tile b{display:block;font-family:var(--mono);font-size:34px;font-weight:800;line-height:1.2}
+.r-tile--y{background:var(--yellow)}
+.r-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.filter{height:42px;padding:0 18px;border:var(--bd);border-radius:999px;background:#fff;font-weight:900;cursor:pointer}
+.filter[aria-pressed="true"]{background:var(--char);color:var(--cream)}
+.r-tools .input{width:220px;height:42px}
+.r-tools .btn-line{height:42px;margin-left:auto}
+.roster tbody tr{cursor:default}
+.st{display:inline-flex;align-items:center;height:30px;padding:0 14px;border:2px solid var(--char);border-radius:999px;font-size:13px;font-weight:900}
+.st--done{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.st--wait{background:var(--yellow)}
+.st--odd{background:#fff;color:var(--red-dk);border-color:var(--red-dk)}
+td.nm{font-weight:900;font-size:17px}
 
 /* ---------- misc ---------- */
 .state{padding:96px 0;text-align:center;background:var(--paper);border-bottom:var(--bd)}
@@ -204,7 +246,7 @@ td.num{font-family:var(--mono);font-size:15px}
 .toast.show{transform:translate(-50%,0)}
 
 @media (max-width:1080px){ .tiles{grid-template-columns:repeat(3,1fr)} }
-@media (max-width:960px){ .admin{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:860px){ .r-tiles{grid-template-columns:1fr 1fr} }
 @media (max-width:860px){
   .hero__in{grid-template-columns:1fr;gap:32px;padding:44px 0 40px}
   .hero-card{max-width:460px}
@@ -223,13 +265,20 @@ td.num{font-family:var(--mono);font-size:15px}
   .filters__in{flex-wrap:wrap}
   .filters .select{max-width:none;flex:1 1 140px}
   .filters__lb{width:100%}
-  .filters .btn-line,.filters .btn-line:first-of-type{margin-left:0;flex:1}
+  .filters .btn-line{margin-left:0;flex:1}
   .dist-row{grid-template-columns:1fr 88px;gap:8px 12px}
   .dist-mean b{font-size:26px}
   .bar100{height:40px}
   .seg{font-size:11px}
   .hbar{grid-template-columns:96px minmax(0,1fr) 52px;gap:10px}
   .hero-card__row{flex-direction:column}
+  .lock-row{flex-direction:column}
+  .tl-sep{display:none}
+  .tl-unit .tl-u{display:block;line-height:1.5}
+  .r-tools .input{width:100%}
+  .r-tools .btn-line{margin-left:0;flex:1}
+  .drawer__body,.modal__body{padding:18px}
+  .tl-btn{height:32px;padding:0 12px;font-size:13px}
   .fb-tools .input{max-width:none}
   .foot__in{flex-direction:column;gap:4px}
 }
@@ -241,8 +290,8 @@ td.num{font-family:var(--mono);font-size:15px}
 
 <header class="topline">
   <div class="wrap topline__in">
-    <span><span class="tl-en">CHI MEI MEDICAL CENTER · </span>教學部實習醫學生訓練組｜臨床技能中心</span>
-    <span>COMMAND DASHBOARD · UGY-DF</span>
+    <span class="tl-unit"><span class="tl-en">CHI MEI MEDICAL CENTER · </span><span class="tl-u">教學部實習醫學生訓練組</span><span class="tl-sep">｜</span><span class="tl-u">臨床技能中心</span></span>
+    <div class="tl-act"><button type="button" class="tl-btn" id="adminBtn"><i></i><span id="adminBtnT">管理者登入</span></button></div>
   </div>
 </header>
 
@@ -272,7 +321,6 @@ td.num{font-family:var(--mono);font-size:15px}
       <span class="filters__lb">FILTER</span>
       <select class="select" id="fSession" aria-label="梯次"></select>
       <select class="select" id="fSchool" aria-label="學校"></select>
-      <button type="button" class="btn-line" id="adminJump">梯次管理</button>
       <button type="button" class="btn-line" id="refreshBtn">重新整理</button>
     </div>
   </nav>
@@ -319,10 +367,45 @@ td.num{font-family:var(--mono);font-size:15px}
     </div>
   </section>
 
-  <!-- 04 檢傷 & 學校 -->
+  <!-- 04 學員追蹤 -->
+  <section class="band band--cream" id="rosterBand">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">04</span><h2>學員完成狀態</h2><span class="sec-en">FOLLOW-UP</span></div>
+      <p class="sec-desc">逐一列出每位學員的報到與問卷狀態，方便追蹤尚未填問卷的人。範圍跟著上方篩選列。</p>
+      <div class="card lock-note" id="rosterLock">
+        <div><p>此區含學員姓名，需管理者登入</p><span>請點右上角「管理者登入」，登入後即顯示名單。</span></div>
+        <button type="button" class="btn-pill" id="rosterLoginBtn">管理者登入</button>
+      </div>
+      <div id="rosterBody" hidden>
+        <div class="r-tiles">
+          <div class="r-tile"><p>名單人數</p><b id="rAll">0</b></div>
+          <div class="r-tile r-tile--y"><p>待填問卷</p><b id="rWait">0</b></div>
+          <div class="r-tile"><p>已完成</p><b id="rDone">0</b></div>
+          <div class="r-tile"><p>未報到・已填</p><b id="rOdd">0</b></div>
+        </div>
+        <div class="r-tools">
+          <button type="button" class="filter" data-f="all" aria-pressed="true">全部</button>
+          <button type="button" class="filter" data-f="wait" aria-pressed="false">待填問卷</button>
+          <button type="button" class="filter" data-f="done" aria-pressed="false">已完成</button>
+          <button type="button" class="filter" data-f="odd" aria-pressed="false">未報到</button>
+          <input class="input" id="rSearch" type="search" placeholder="搜尋姓名或學校">
+          <button type="button" class="btn-line" id="copyBtn">複製待填名單</button>
+        </div>
+        <div class="table-wrap">
+          <table class="roster">
+            <thead><tr><th>#</th><th>課程日期</th><th>學校</th><th>年級</th><th>姓名</th><th>報到時間</th><th>問卷填答時間</th><th>狀態</th></tr></thead>
+            <tbody id="rosterRows"></tbody>
+          </table>
+        </div>
+        <p class="note">「待填問卷」＝已報到但尚未填問卷；「未報到」＝有填問卷但沒有報到紀錄。從舊表單匯入、沒有報到紀錄的梯次一律列為已完成。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 檢傷 & 學校 -->
   <section class="band band--cream">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-no">04</span><h2>檢傷題與學員組成</h2><span class="sec-en">TRIAGE · SCHOOLS</span></div>
+      <div class="sec-head"><span class="sec-no">05</span><h2>檢傷題與學員組成</h2><span class="sec-en">TRIAGE · SCHOOLS</span></div>
       <p class="sec-desc">檢傷排序的作答分布，以及各校填答人數與平均分數。</p>
       <div class="grid2">
         <div class="card">
@@ -344,7 +427,7 @@ td.num{font-family:var(--mono);font-size:15px}
   <!-- 05 回饋 -->
   <section class="band band--paper">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-no">05</span><h2>學員回饋</h2><span class="sec-en">DEBRIEF</span></div>
+      <div class="sec-head"><span class="sec-no">06</span><h2>學員回饋</h2><span class="sec-en">DEBRIEF</span></div>
       <p class="sec-desc">開放式回答原文，可用關鍵字搜尋。</p>
       <div class="fb-tools">
         <input class="input" id="fbSearch" type="search" placeholder="搜尋關鍵字，例如：檢傷、指揮官、時間">
@@ -357,63 +440,72 @@ td.num{font-family:var(--mono);font-size:15px}
     </div>
   </section>
 
-  <!-- 06 梯次管理 -->
-  <section class="band band--admin" id="adminBand">
-    <div class="wrap">
-      <div class="sec-head"><span class="sec-no">06</span><h2>梯次管理</h2><span class="sec-en">SESSION CONTROL</span></div>
-      <p class="sec-desc">新增課程梯次，或切換開放狀態。只有「開放」的梯次會出現在問卷與報到頁的選單中。</p>
-      <div class="card admin-lock" id="lockCard">
-        <p class="card-title">管理者登入</p>
-        <p class="card-sub">新增或開關梯次需要管理密碼（與報到站「現場看板」共用，可在試算表「系統設定」工作表修改）。</p>
-        <div class="lock-row">
-          <input class="input" id="key" type="password" autocomplete="off" placeholder="請輸入管理密碼">
-          <button type="button" class="btn-pill" id="unlockBtn">登入</button>
-        </div>
-      </div>
-      <div class="admin" id="adminBody" hidden>
-        <div class="card">
-          <p class="card-title">新增梯次</p>
-          <p class="card-sub">梯次代碼會依日期自動產生</p>
-          <div class="form">
-            <label class="field">
-              <span class="field-label">課程日期 <span class="req">*</span></span>
-              <input class="input" id="aDate" type="date">
-            </label>
-            <label class="field">
-              <span class="field-label">梯次名稱 <span class="req">*</span></span>
-              <input class="input" id="aName" type="text" maxlength="60" placeholder="例如：災難最前線 第3梯次">
-            </label>
-            <div class="field">
-              <span class="field-label">開放狀態</span>
-              <div class="seg-pick" role="radiogroup" aria-label="開放狀態">
-                <label><input type="radio" name="aOpen" value="1" checked><span>立即開放</span></label>
-                <label><input type="radio" name="aOpen" value="0"><span>先關閉</span></label>
-              </div>
-            </div>
-            <label class="field">
-              <span class="field-label">備註</span>
-              <input class="input" id="aNote" type="text" maxlength="100" placeholder="選填，例如：中山醫第二組">
-            </label>
-            <button type="button" class="btn-pill" id="addBtn">新增梯次 →</button>
-            <p class="form-note">同一天新增第二個梯次時，代碼會自動加上 -2、-3。</p>
-          </div>
-        </div>
-        <div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>課程日期</th><th>梯次名稱</th><th>梯次代碼</th><th>開放狀態</th></tr></thead>
-              <tbody id="adminRows"></tbody>
-            </table>
-          </div>
-          <div class="pw-hint">
-            <b>管理密碼</b>放在試算表的「系統設定」工作表 B 欄，直接修改儲存格即可，立即生效、不需重新部署。<br>
-            報到站「現場看板」與本儀表板共用同一組密碼；同一張表也可以修改<b>檢傷標準答案</b>。
-          </div>
-        </div>
+</div>
+
+<!-- 管理者登入 -->
+<div class="scrim" id="scrim" hidden></div>
+<div class="modal" id="loginModal" hidden role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="modal__card">
+    <div class="modal__top"><div><p>ADMIN ACCESS</p><h3 id="loginTitle">管理者登入</h3></div><button type="button" class="x" data-close aria-label="關閉">×</button></div>
+    <div class="modal__body">
+      <p class="card-sub">登入後可查看學員完成名單，並使用梯次管理。密碼與報到站「現場看板」共用，可在試算表「系統設定」工作表修改。</p>
+      <div class="lock-row">
+        <input class="input" id="key" type="password" autocomplete="off" placeholder="請輸入管理密碼">
+        <button type="button" class="btn-pill" id="unlockBtn">登入</button>
       </div>
     </div>
-  </section>
+  </div>
 </div>
+
+<!-- 梯次管理 -->
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+  <div class="drawer__head">
+    <div class="grow"><p>SESSION CONTROL</p><h3 id="drawerTitle">梯次管理</h3></div>
+    <button type="button" class="tl-btn tl-btn--ghost" id="logoutBtn">登出</button>
+    <button type="button" class="x" data-close aria-label="關閉">×</button>
+  </div>
+  <div class="drawer__body">
+    <div class="admin">
+      <div class="card">
+        <p class="card-title">新增梯次</p>
+        <p class="card-sub">梯次代碼會依日期自動產生</p>
+        <div class="form">
+          <label class="field">
+            <span class="field-label">課程日期 <span class="req">*</span></span>
+            <input class="input" id="aDate" type="date">
+          </label>
+          <label class="field">
+            <span class="field-label">梯次名稱 <span class="req">*</span></span>
+            <input class="input" id="aName" type="text" maxlength="60" placeholder="例如：災難最前線 第3梯次">
+          </label>
+          <div class="field">
+            <span class="field-label">開放狀態</span>
+            <div class="seg-pick" role="radiogroup" aria-label="開放狀態">
+              <label><input type="radio" name="aOpen" value="1" checked><span>立即開放</span></label>
+              <label><input type="radio" name="aOpen" value="0"><span>先關閉</span></label>
+            </div>
+          </div>
+          <label class="field">
+            <span class="field-label">備註</span>
+            <input class="input" id="aNote" type="text" maxlength="100" placeholder="選填，例如：中山醫第二組">
+          </label>
+          <button type="button" class="btn-pill" id="addBtn">新增梯次 →</button>
+          <p class="form-note">同一天新增第二個梯次時，代碼會自動加上 -2、-3。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>課程日期</th><th>梯次名稱</th><th>梯次代碼</th><th>開放狀態</th></tr></thead>
+          <tbody id="adminRows"></tbody>
+        </table>
+      </div>
+      <div class="pw-hint">
+        <b>管理密碼</b>放在試算表的「系統設定」工作表 B 欄，直接修改儲存格即可，立即生效、不需重新部署。<br>
+            報到站「現場看板」與本儀表板共用同一組密碼；同一張表也可以修改<b>檢傷標準答案</b>。
+      </div>
+    </div>
+  </div>
+</aside>
 
 <footer class="foot">
   <div class="wrap foot__in">
@@ -446,7 +538,7 @@ const store = {
   get(k) { try { return sessionStorage.getItem(k); } catch (_) { return null; } },
   set(k, v) { try { sessionStorage.setItem(k, v); } catch (_) {} }
 };
-const state = { data: null, key: '', session: '', school: '' };
+const state = { data: null, key: '', session: '', school: '', roster: null, rFilter: 'all' };
 
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
@@ -708,6 +800,7 @@ function renderAll() {
   renderTriage(surveys);
   renderSchools(surveys);
   renderFeedback(surveys);
+  renderRoster();
 }
 
 /* ---------- load ---------- */
@@ -729,32 +822,101 @@ async function load(silent) {
   }
 }
 
+async function fetchRoster(key) {
+  if (DEMO) {
+    const d = demoData();
+    const done = new Set(d.surveys.map(r => r.session + '|' + r.name));
+    return { ok: true, rows: d.checkins.map(c => ({ ...c, checkin: c.time,
+      survey: done.has(c.session + '|' + c.name) ? (d.surveys.find(r => r.session === c.session && r.name === c.name) || {}).time : '', checkedIn: true })) };
+  }
+  const r = await fetch(CONFIG.GAS_URL + '?' + new URLSearchParams({ action: 'roster', key }));
+  return r.json();
+}
+
 async function login(key, silent) {
   if (!key) { $('#key').classList.add('is-error'); if (!silent) toast('請輸入管理密碼'); return; }
+  const btn = $('#unlockBtn'); btn.disabled = true;
   try {
-    let ok = DEMO;
-    if (!DEMO) {
-      const r = await (await fetch(CONFIG.GAS_URL + '?' + new URLSearchParams({ action: 'allSessions', key }))).json();
-      ok = r.ok;
-      if (ok && state.data) { state.data.sessions = r.sessions; renderFilters(); }
-    }
-    if (!ok) throw new Error('密碼錯誤');
-    state.key = key; store.set('df_key', key);
-    $('#lockCard').hidden = true; $('#adminBody').hidden = false;
-    renderAdmin();
-    if (!silent) toast('已登入梯次管理');
+    const r = await fetchRoster(key);
+    if (!r.ok) throw new Error(r.message || '密碼錯誤');
+    if (!Array.isArray(r.rows)) throw new Error('後端尚未更新：請在 Apps Script 以「新版本」重新部署');
+    state.key = key; state.roster = r.rows; store.set('df_key', key);
+    setAdminUI(true); closeAll(); renderRoster();
+    if (!silent) toast('已登入，名單與梯次管理已開啟');
   } catch (e) {
     $('#key').classList.add('is-error');
     if (!silent) toast(e.message || '網路異常，請稍後再試');
-  }
+    else store.set('df_key', '');
+  } finally { btn.disabled = false; }
+}
+function logout() {
+  state.key = ''; state.roster = null; store.set('df_key', '');
+  $('#key').value = ''; setAdminUI(false); closeAll(); toast('已登出');
+}
+function setAdminUI(on) {
+  $('#adminBtn').classList.toggle('on', on);
+  $('#adminBtnT').textContent = on ? '梯次管理' : '管理者登入';
+  $('#rosterLock').hidden = on; $('#rosterBody').hidden = !on;
+  if (on) renderAdmin();
+}
+function openEl(id) { $('#scrim').hidden = false; $(id).hidden = false; document.body.classList.add('locked'); }
+function closeAll() { ['#scrim', '#loginModal', '#drawer'].forEach(s => $(s).hidden = true); document.body.classList.remove('locked'); }
+function openAdmin() {
+  if (state.key) { renderAdmin(); openEl('#drawer'); }
+  else { openEl('#loginModal'); setTimeout(() => $('#key').focus(), 50); }
+}
+
+/* ---------- 學員完成狀態 ---------- */
+function rosterRows() {
+  if (!state.roster) return [];
+  const ckSessions = new Set(state.roster.filter(r => r.checkedIn).map(r => r.session));
+  return state.roster
+    .filter(r => (!state.session || r.session === state.session) && (!state.school || r.school === state.school))
+    .map(r => ({ ...r, st: r.checkedIn ? (r.survey ? 'done' : 'wait') : (ckSessions.has(r.session) ? 'odd' : 'done') }));
+}
+function renderRoster() {
+  if (!state.roster) return;
+  const rows = rosterRows();
+  const cnt = k => rows.filter(r => r.st === k).length;
+  $('#rAll').textContent = rows.length; $('#rWait').textContent = cnt('wait');
+  $('#rDone').textContent = cnt('done'); $('#rOdd').textContent = cnt('odd');
+  const kw = $('#rSearch').value.trim();
+  const order = { wait: 0, odd: 1, done: 2 };
+  const view = rows.filter(r => (state.rFilter === 'all' || r.st === state.rFilter) && (!kw || r.name.includes(kw) || r.school.includes(kw)))
+    .sort((a, b) => order[a.st] - order[b.st] || (a.date < b.date ? 1 : a.date > b.date ? -1 : 0) || a.school.localeCompare(b.school) || a.name.localeCompare(b.name));
+  const label = { done: ['已完成', 'st--done'], wait: ['待填問卷', 'st--wait'], odd: ['未報到', 'st--odd'] };
+  $('#rosterRows').innerHTML = view.length ? view.map((r, i) => `
+    <tr><td class="num">${String(i + 1).padStart(2, '0')}</td><td class="num">${esc(r.date)}</td><td>${esc(r.school)}</td><td>${esc(r.grade)}</td>
+      <td class="nm">${esc(r.name)}</td><td class="num">${esc(r.checkin) || '<span class="na">—</span>'}</td>
+      <td class="num">${esc(r.survey) || '<span class="na">—</span>'}</td><td><span class="st ${label[r.st][1]}">${label[r.st][0]}</span></td></tr>`).join('')
+    : '<tr><td colspan="8" class="empty">目前沒有符合條件的學員</td></tr>';
+}
+async function copyWaiting() {
+  const names = rosterRows().filter(r => r.st === 'wait').map(r => `${r.name}（${r.school}・${r.date}）`);
+  if (!names.length) { toast('目前沒有待填問卷的學員'); return; }
+  try { await navigator.clipboard.writeText(names.join('\n')); toast(`已複製 ${names.length} 位待填名單`); }
+  catch (_) { toast('無法複製，請手動選取表格內容'); }
 }
 
 function init() {
   $('#demoBar').hidden = !DEMO;
   $('#unlockBtn').addEventListener('click', () => login($('#key').value.trim()));
+  $('#adminBtn').addEventListener('click', openAdmin);
+  $('#rosterLoginBtn').addEventListener('click', openAdmin);
+  $('#logoutBtn').addEventListener('click', logout);
+  $('#scrim').addEventListener('click', closeAll);
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeAll));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+  document.querySelectorAll('.r-tools .filter').forEach(b => b.addEventListener('click', () => {
+    state.rFilter = b.dataset.f;
+    document.querySelectorAll('.r-tools .filter').forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderRoster();
+  }));
+  $('#rSearch').addEventListener('input', renderRoster);
+  $('#copyBtn').addEventListener('click', copyWaiting);
   $('#key').addEventListener('keydown', e => { if (e.key === 'Enter') $('#unlockBtn').click(); });
   $('#key').addEventListener('input', () => $('#key').classList.remove('is-error'));
-  $('#refreshBtn').addEventListener('click', () => load());
+  $('#refreshBtn').addEventListener('click', async () => { await load(); if (state.key) login(state.key, true); });
   $('#fSession').addEventListener('change', e => { state.session = e.target.value; renderAll(); });
   $('#fSchool').addEventListener('change', e => { state.school = e.target.value; renderAll(); });
   $('#sessRows').addEventListener('click', e => {
@@ -763,7 +925,6 @@ function init() {
     $('#fSession').value = state.session; renderAll();
     window.scrollTo({ top: $('#dash').offsetTop, behavior: 'smooth' });
   });
-  $('#adminJump').addEventListener('click', () => { window.scrollTo({ top: $('#adminBand').offsetTop - 70, behavior: 'smooth' }); if (!$('#lockCard').hidden) setTimeout(() => $('#key').focus(), 400); });
   $('#addBtn').addEventListener('click', addSession);
   ['#aDate', '#aName'].forEach(s => $(s).addEventListener('input', () => $(s).classList.remove('is-error')));
   $('#adminRows').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) toggleSession(b); });
