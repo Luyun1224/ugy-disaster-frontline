@@ -115,6 +115,41 @@ button,input,select{font:inherit;color:inherit}
 .dist-mean b{font-family:var(--mono);font-size:34px;font-weight:800;line-height:1}
 .dist-mean span{display:block;font-size:13px;font-weight:700;color:var(--gray)}
 
+/* ---------- cross analysis ---------- */
+:root{--h1:#A6B3D6;--h2:#8293C6;--h3:#5D72AF;--h4:#33498A;--h5:#0E1B3D}
+.cross-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{height:40px;padding:0 18px;border:var(--bd);border-radius:999px;background:#fff;font-weight:900;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--char);color:var(--cream)}
+.hlegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:13px;font-weight:900}
+.hlegend span{display:inline-flex;align-items:center;gap:6px}
+.hlegend i{width:16px;height:16px;border:2px solid var(--char);border-radius:4px}
+.hlegend .dash{background:#fff;border-style:dashed}
+.heat{width:100%;border-collapse:separate;border-spacing:4px;min-width:760px}
+.heat th{background:none;color:var(--char);border:0;padding:6px 8px;font-size:13px;font-weight:900;white-space:normal;vertical-align:bottom;text-align:center;line-height:1.35}
+.heat th:first-child{text-align:left}
+.heat td{border:2px solid var(--char);border-radius:10px;padding:10px 8px;text-align:center;font-family:var(--mono);font-weight:800;font-size:16px}
+.heat td.lb{text-align:left;font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:900;border:0;padding-left:4px;white-space:nowrap}
+.heat td.lb small{display:block;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gray)}
+.heat td.plain{background:#fff}
+.heat td.few{border-style:dashed}
+.heat td[data-h="3"],.heat td[data-h="4"],.heat td[data-h="5"]{color:var(--white)}
+.heat tr.total td{font-size:17px;box-shadow:inset 0 0 0 1px var(--char)}
+.heat tr.total td.lb{border:0}
+.heat-wrap{overflow-x:auto;padding-bottom:4px}
+.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.ins{border:var(--bd);border-radius:var(--r-lg);padding:14px 18px;background:var(--cream)}
+.ins p{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--red-dk)}
+.ins b{display:block;font-size:16px;font-weight:900;line-height:1.5;margin-top:4px}
+.ins span{display:block;font-size:13px;font-weight:700;color:var(--gray);margin-top:4px}
+
+/* ---------- keyword chips ---------- */
+.kw{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.kw button{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 6px 0 14px;border:2px solid var(--char);border-radius:999px;background:#fff;font-weight:900;cursor:pointer}
+.kw button b{font-family:var(--mono);font-size:13px;min-width:28px;height:26px;display:grid;place-items:center;border-radius:999px;background:var(--char);color:var(--cream);padding:0 8px}
+.kw button[aria-pressed="true"]{background:var(--yellow)}
+.kw-lb{font-weight:900;margin-bottom:10px}
+
 /* ---------- table ---------- */
 .table-wrap{border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);background:var(--white);overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:820px}
@@ -246,7 +281,7 @@ td.nm{font-weight:900;font-size:17px}
 .toast.show{transform:translate(-50%,0)}
 
 @media (max-width:1080px){ .tiles{grid-template-columns:repeat(3,1fr)} }
-@media (max-width:860px){ .r-tiles{grid-template-columns:1fr 1fr} }
+@media (max-width:860px){ .r-tiles{grid-template-columns:1fr 1fr} .insights{grid-template-columns:1fr} }
 @media (max-width:860px){
   .hero__in{grid-template-columns:1fr;gap:32px;padding:44px 0 40px}
   .hero-card{max-width:460px}
@@ -344,10 +379,27 @@ td.nm{font-weight:900;font-size:17px}
   <section class="band band--cream">
     <div class="wrap">
       <div class="sec-head"><span class="sec-no">02</span><h2>各題評價分布</h2><span class="sec-en">RATING</span></div>
-      <p class="sec-desc">每條長條代表該題 100% 的回覆，依 1–5 分切段；右側為平均分數與 4–5 分占比。</p>
+      <p class="sec-desc">每條長條代表該題 100% 的回覆，依 1–5 分切段；右側為平均分數與 4–5 分占比。下方交叉分析可比較不同學校、年級、梯次。</p>
       <div class="card">
         <div class="legend" id="legend"></div>
         <div class="dist" id="dist"></div>
+      </div>
+
+      <div class="card" style="margin-top:28px">
+        <div class="cross-head">
+          <div>
+            <p class="card-title">交叉分析</p>
+            <p class="card-sub" style="margin-bottom:0">各組在每一題的平均分數；顏色越深分數越高，格內數字為平均。</p>
+          </div>
+          <div class="pills" role="group" aria-label="分組方式">
+            <button type="button" class="pill" data-dim="school" aria-pressed="true">依學校</button>
+            <button type="button" class="pill" data-dim="grade" aria-pressed="false">依年級</button>
+            <button type="button" class="pill" data-dim="session" aria-pressed="false">依梯次</button>
+          </div>
+        </div>
+        <div class="hlegend" id="hlegend"></div>
+        <div class="heat-wrap" style="margin-top:12px"><table class="heat"><thead id="heatHead"></thead><tbody id="heatBody"></tbody></table></div>
+        <div class="insights" id="insights"></div>
       </div>
     </div>
   </section>
@@ -367,10 +419,51 @@ td.nm{font-weight:900;font-size:17px}
     </div>
   </section>
 
-  <!-- 04 學員追蹤 -->
+  <!-- 04 檢傷 & 學校 -->
+  <section class="band band--cream">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">04</span><h2>檢傷題與學員組成</h2><span class="sec-en">TRIAGE · SCHOOLS</span></div>
+      <p class="sec-desc">檢傷排序的作答分布，以及各校填答人數與平均分數。</p>
+      <div class="grid2">
+        <div class="card">
+          <p class="card-title">檢傷排序作答</p>
+          <p class="card-sub">Q5｜依檢傷顏色決定四位病患的處置順序</p>
+          <div class="big-stat"><b id="triRate">—</b><span id="triRateT">% 答對</span></div>
+          <div class="hbars" id="triBars"></div>
+          <p class="note" id="triNote"></p>
+        </div>
+        <div class="card">
+          <p class="card-title">各校填答人數</p>
+          <p class="card-sub">長條為人數，右側為該校 Q1–Q4 平均</p>
+          <div class="hbars" id="schoolBars"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 回饋 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">05</span><h2>學員回饋</h2><span class="sec-en">DEBRIEF</span></div>
+      <p class="sec-desc">開放式回答原文，可用關鍵字搜尋。</p>
+      <p class="kw-lb">回饋主題（數字為提及的學員數，點選篩選、再點一次取消）</p>
+      <div class="kw" id="kw"></div>
+      <div class="fb-tools">
+        <input class="input" id="fbSearch" type="search" placeholder="搜尋關鍵字，例如：檢傷、指揮官、時間">
+        <label class="toggle"><input type="checkbox" id="hideNone" checked> 隱藏「無」等空白回覆</label>
+      </div>
+      <div class="grid2">
+        <div class="fb-col"><h3>最有收穫的部分 <span id="gainN">0</span></h3><div class="fb-list" id="gainList"></div></div>
+        <div class="fb-col"><h3>需要改進的地方 <span id="impN">0</span></h3><div class="fb-list" id="impList"></div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 06 學員追蹤 -->
   <section class="band band--cream" id="rosterBand">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-no">04</span><h2>學員完成狀態</h2><span class="sec-en">FOLLOW-UP</span></div>
+      <div class="sec-head"><span class="sec-no">06</span><h2>學員完成狀態</h2><span class="sec-en">FOLLOW-UP</span></div>
       <p class="sec-desc">逐一列出每位學員的報到與問卷狀態，方便追蹤尚未填問卷的人。範圍跟著上方篩選列。</p>
       <div class="card lock-note" id="rosterLock">
         <div><p>此區含學員姓名，需管理者登入</p><span>請點右上角「管理者登入」，登入後即顯示名單。</span></div>
@@ -401,45 +494,6 @@ td.nm{font-weight:900;font-size:17px}
       </div>
     </div>
   </section>
-
-  <!-- 05 檢傷 & 學校 -->
-  <section class="band band--cream">
-    <div class="wrap">
-      <div class="sec-head"><span class="sec-no">05</span><h2>檢傷題與學員組成</h2><span class="sec-en">TRIAGE · SCHOOLS</span></div>
-      <p class="sec-desc">檢傷排序的作答分布，以及各校填答人數與平均分數。</p>
-      <div class="grid2">
-        <div class="card">
-          <p class="card-title">檢傷排序作答</p>
-          <p class="card-sub">Q5｜依檢傷顏色決定四位病患的處置順序</p>
-          <div class="big-stat"><b id="triRate">—</b><span id="triRateT">% 答對</span></div>
-          <div class="hbars" id="triBars"></div>
-          <p class="note" id="triNote"></p>
-        </div>
-        <div class="card">
-          <p class="card-title">各校填答人數</p>
-          <p class="card-sub">長條為人數，右側為該校 Q1–Q4 平均</p>
-          <div class="hbars" id="schoolBars"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05 回饋 -->
-  <section class="band band--paper">
-    <div class="wrap">
-      <div class="sec-head"><span class="sec-no">06</span><h2>學員回饋</h2><span class="sec-en">DEBRIEF</span></div>
-      <p class="sec-desc">開放式回答原文，可用關鍵字搜尋。</p>
-      <div class="fb-tools">
-        <input class="input" id="fbSearch" type="search" placeholder="搜尋關鍵字，例如：檢傷、指揮官、時間">
-        <label class="toggle"><input type="checkbox" id="hideNone" checked> 隱藏「無」等空白回覆</label>
-      </div>
-      <div class="grid2">
-        <div class="fb-col"><h3>最有收穫的部分 <span id="gainN">0</span></h3><div class="fb-list" id="gainList"></div></div>
-        <div class="fb-col"><h3>需要改進的地方 <span id="impN">0</span></h3><div class="fb-list" id="impList"></div></div>
-      </div>
-    </div>
-  </section>
-
 </div>
 
 <!-- 管理者登入 -->
@@ -538,7 +592,11 @@ const store = {
   get(k) { try { return sessionStorage.getItem(k); } catch (_) { return null; } },
   set(k, v) { try { sessionStorage.setItem(k, v); } catch (_) {} }
 };
-const state = { data: null, key: '', session: '', school: '', roster: null, rFilter: 'all' };
+const state = { data: null, key: '', session: '', school: '', roster: null, rFilter: 'all', dim: 'school', theme: -1 };
+const THEMES = [
+  ['檢傷', ['檢傷']], ['團隊合作', ['團隊', '合作', '分工']], ['溝通', ['溝通']], ['指揮架構', ['指揮', '組織', '架構', '角色']],
+  ['模擬演練', ['模擬', '演練', '遊戲', '實作']], ['臨場應變', ['臨場', '應變', '壓力', '判斷']], ['時間安排', ['時間', '拉長', '太短', '太趕']]
+];
 
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
@@ -681,6 +739,55 @@ function renderDist(sv) {
   }).join('');
 }
 
+/* ---------- 交叉分析 ---------- */
+const HSTEPS = [[0, '4.0 以下'], [4.0, '4.0–4.39'], [4.4, '4.4–4.69'], [4.7, '4.7–4.89'], [4.9, '4.9 以上']];
+const hstep = v => v == null ? 0 : HSTEPS.reduce((acc, [t], i) => v >= t ? i + 1 : acc, 1);
+function groupBy(rows, dim) {
+  const sl = sessionList();
+  const label = r => dim === 'session' ? ((sl.find(s => s.code === r.session) || {}).date || r.session) : (r[dim] || '未填');
+  const map = new Map();
+  rows.forEach(r => { const k = label(r); if (!map.has(k)) map.set(k, []); map.get(k).push(r); });
+  const list = [...map.entries()];
+  return dim === 'session' ? list.sort((a, b) => (a[0] < b[0] ? 1 : -1)) : list.sort((a, b) => b[1].length - a[1].length);
+}
+function cellStats(rows) {
+  const qm = QUESTIONS.map(q => mean(rows.map(r => r[q.id]).filter(v => v >= 1 && v <= 5)));
+  const judged = rows.filter(isJudged);
+  return { n: rows.length, qm, all: mean(scoresOf(rows)), tri: pct(judged.filter(r => r.correct === '正確').length, judged.length) };
+}
+function renderCross(sv) {
+  $('#hlegend').innerHTML = HSTEPS.map(([, t], i) => `<span><i style="background:var(--h${i + 1})"></i>${t}</span>`).join('') +
+    '<span><i class="dash"></i>虛線框＝人數少於 5，僅供參考</span>';
+  $('#heatHead').innerHTML = `<tr><th>${{ school: '學校', grade: '年級', session: '梯次' }[state.dim]}</th>` +
+    QUESTIONS.map(q => `<th title="${q.text}">${q.no}<br><small>${q.text.replace(/^(本課程|課程|本次課程)/, '').slice(0, 10)}…</small></th>`).join('') +
+    '<th>整體平均</th><th>檢傷正確率</th></tr>';
+  const groups = groupBy(sv, state.dim).map(([k, rows]) => [k, cellStats(rows)]);
+  const cell = (v, n, tipLabel) => v == null ? '<td class="plain na">—</td>' :
+    `<td data-h="${hstep(v)}" class="${n < 5 ? 'few' : ''}" style="background:var(--h${hstep(v)})" data-tip="${esc(tipLabel)}<br>平均 ${v.toFixed(2)}・${n} 人">${v.toFixed(2)}</td>`;
+  const row = (k, st, cls) => `<tr class="${cls || ''}"><td class="lb">${esc(k)}<small>n = ${st.n}</small></td>` +
+    st.qm.map((v, i) => cell(v, st.n, `${k}｜${QUESTIONS[i].no}`)).join('') + cell(st.all, st.n, `${k}｜整體`) +
+    `<td class="plain ${st.n < 5 ? 'few' : ''}">${st.tri == null ? '<span class="na">—</span>' : st.tri + '%'}</td></tr>`;
+  $('#heatBody').innerHTML = groups.length ? groups.map(([k, st]) => row(k, st)).join('') + row('全體', cellStats(sv), 'total')
+    : '<tr><td class="lb empty" colspan="7">目前沒有資料</td></tr>';
+  renderInsights(sv, groups);
+}
+function renderInsights(sv, groups) {
+  const all = cellStats(sv);
+  const out = [];
+  if (all.n) {
+    const qi = all.qm.reduce((b, v, i) => (v != null && (b < 0 || v < all.qm[b]) ? i : b), -1);
+    if (qi > -1) out.push(['最低分題目', `${QUESTIONS[qi].no}　${all.qm[qi].toFixed(2)} 分`, QUESTIONS[qi].text]);
+    const big = groups.filter(([, st]) => st.n >= 5 && st.all != null);
+    if (big.length >= 2) {
+      const hi = big.reduce((a, b) => (b[1].all > a[1].all ? b : a)), lo = big.reduce((a, b) => (b[1].all < a[1].all ? b : a));
+      out.push(['組間差距', `${(hi[1].all - lo[1].all).toFixed(2)} 分`, `最高：${hi[0]}（${hi[1].all.toFixed(2)}）／最低：${lo[0]}（${lo[1].all.toFixed(2)}）・只比較 5 人以上的組別`]);
+    } else out.push(['組間差距', '樣本不足', '需至少兩組各 5 人以上才比較']);
+    const vals = scoresOf(sv), five = pct(vals.filter(v => v === 5).length, vals.length);
+    out.push(['天花板效應', `${five}% 的評分為 5 分`, five >= 80 ? '多數給滿分，量表較難分辨細微差異，可多參考開放題回饋' : '分數分布尚有區辨度']);
+  }
+  $('#insights').innerHTML = out.map(([k, b, t]) => `<div class="ins"><p>${k}</p><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join('');
+}
+
 function renderSessions() {
   const d = state.data;
   const bySchool = r => !state.school || r.school === state.school;
@@ -736,15 +843,22 @@ function renderSchools(sv) {
     </div>`).join('') : '<p class="empty">尚無資料</p>';
 }
 
+function renderKeywords(sv) {
+  $('#kw').innerHTML = THEMES.map(([label, words], i) => {
+    const n = sv.filter(r => [r.gain, r.improve].some(t => t && words.some(w => t.includes(w)))).length;
+    return `<button type="button" data-i="${i}" aria-pressed="${state.theme === i}" data-tip="${esc(label)}：含「${words.map(esc).join('、')}」<br>${n} 位學員提及">${label}<b>${n}</b></button>`;
+  }).join('');
+}
 function renderFeedback(sv) {
+  renderKeywords(sv);
   const kw = $('#fbSearch').value.trim();
   const hide = $('#hideNone').checked;
-  const hl = t => {
-    const s = esc(t);
-    return kw ? s.split(esc(kw)).join(`<mark>${esc(kw)}</mark>`) : s;
-  };
+  const words = state.theme > -1 ? THEMES[state.theme][1] : [];
+  const marks = [...words, kw].filter(Boolean);
+  const hl = t => marks.reduce((acc, w) => acc.split(esc(w)).join(`<mark>${esc(w)}</mark>`), esc(t));
+  const themeOk = t => !words.length || words.some(w => t.includes(w));
   const build = (field, listEl, nEl) => {
-    const items = sv.filter(r => r[field] && !(hide && isNone(r[field])) && (!kw || r[field].includes(kw)))
+    const items = sv.filter(r => r[field] && !(hide && isNone(r[field])) && themeOk(r[field]) && (!kw || r[field].includes(kw)))
       .sort((a, b) => (a.time < b.time ? 1 : -1));
     $(nEl).textContent = items.length;
     $(listEl).innerHTML = items.length ? items.map(r => `
@@ -796,6 +910,7 @@ function renderAll() {
   const { surveys, checkins } = scoped();
   renderKPI(surveys, checkins);
   renderDist(surveys);
+  renderCross(surveys);
   renderSessions();
   renderTriage(surveys);
   renderSchools(surveys);
@@ -929,6 +1044,16 @@ function init() {
   ['#aDate', '#aName'].forEach(s => $(s).addEventListener('input', () => $(s).classList.remove('is-error')));
   $('#adminRows').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) toggleSession(b); });
   $('#fbSearch').addEventListener('input', () => renderFeedback(scoped().surveys));
+  document.querySelectorAll('.pill[data-dim]').forEach(b => b.addEventListener('click', () => {
+    state.dim = b.dataset.dim;
+    document.querySelectorAll('.pill[data-dim]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderCross(scoped().surveys);
+  }));
+  $('#kw').addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    state.theme = state.theme === +b.dataset.i ? -1 : +b.dataset.i;
+    renderFeedback(scoped().surveys);
+  });
   $('#hideNone').addEventListener('change', () => renderFeedback(scoped().surveys));
   load(true).then(() => {
     const saved = store.get('df_key');
