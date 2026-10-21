@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>災難最前線 課程滿意度</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E4441F; --red-dk:#B9300F;
+  --navy:#0E1B3D; --cream:#F2EBDC; --paper:#FAF6EC; --white:#FFFDF8;
+  --char:#1D1D1B; --gray:#5E5C57; --yellow:#FFC629;
+  --bd:3px solid var(--char);
+  --r-xl:24px; --r-lg:18px; --r-md:14px;
+  --sh:6px 6px 0 var(--char);
+  --gutter:32px;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;font-weight:500;line-height:1.6;color:var(--char);background:var(--cream);overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{width:min(1120px,calc(100% - var(--gutter)*2));margin-inline:auto}
+.mono{font-family:var(--mono)}
+[hidden]{display:none!important}
+
+/* ---------- top line / demo ---------- */
+.demo{background:var(--yellow);border-bottom:var(--bd);font-weight:900;font-size:14px;text-align:center;padding:8px 16px}
+.topline{background:var(--red);color:var(--white);border-bottom:var(--bd)}
+.topline__in{display:flex;justify-content:space-between;gap:16px;padding:10px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em}
+
+/* ---------- hero ---------- */
+.hero{background:var(--navy);color:var(--cream);border-bottom:var(--bd)}
+.hero__in{display:grid;grid-template-columns:1fr 340px;gap:48px;align-items:end;padding:64px 0 56px}
+.kicker{font-family:var(--mono);font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--yellow)}
+.hero__title{font-size:clamp(64px,11vw,140px);font-weight:900;line-height:.98;letter-spacing:-.02em;margin:18px 0 20px}
+.hero__title span{color:var(--red)}
+.hero__sub{font-size:clamp(18px,2.2vw,24px);font-weight:900}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.chip{display:inline-flex;align-items:center;height:36px;padding:0 16px;border:3px solid var(--cream);border-radius:999px;font-size:14px;font-weight:900}
+.chip--y{background:var(--yellow);border-color:var(--yellow);color:var(--char)}
+.brief{background:var(--cream);color:var(--char);border:var(--bd);border-radius:var(--r-xl);box-shadow:6px 6px 0 var(--yellow);padding:24px}
+.brief__label{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--red)}
+.brief__list{list-style:none;margin:14px 0 16px;border-top:var(--bd)}
+.brief__list li{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:2px solid var(--char);font-weight:900}
+.brief__list b{font-family:var(--mono);font-size:14px;width:28px}
+.brief__note{font-size:14px;font-weight:700;color:var(--gray)}
+.brief__note em{font-style:normal;color:var(--red);font-weight:900}
+
+.hazard{height:20px;border-bottom:var(--bd);background:repeating-linear-gradient(-45deg,var(--yellow) 0 16px,var(--char) 16px 32px)}
+
+/* ---------- progress ---------- */
+.progress{position:sticky;top:0;z-index:20;background:var(--char);color:var(--cream);border-bottom:var(--bd)}
+.progress__in{display:flex;align-items:center;gap:18px;height:56px}
+.progress__label{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;white-space:nowrap}
+.progress__bar{flex:1;display:flex;gap:6px}
+.progress__bar i{flex:1;height:14px;border:2px solid var(--cream);border-radius:999px}
+.progress__bar i.on{background:var(--yellow);border-color:var(--yellow)}
+.progress__num{font-family:var(--mono);font-weight:800;font-size:15px;min-width:52px;text-align:right}
+
+/* ---------- bands & section heads ---------- */
+.band{padding:64px 0;border-bottom:var(--bd)}
+.band--paper{background:var(--paper)}
+.band--cream{background:var(--cream)}
+.sec-head{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.sec-no{font-family:var(--mono);font-size:18px;font-weight:800;background:var(--navy);color:var(--cream);border:var(--bd);border-radius:999px;padding:4px 16px;line-height:1.4}
+.sec-head h2{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.2}
+.sec-en{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gray)}
+.sec-desc{font-weight:700;color:var(--gray);margin-bottom:32px}
+
+/* ---------- cards ---------- */
+.stack{display:grid;gap:28px}
+.card{position:relative;background:var(--white);border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);padding:28px 32px 32px}
+fieldset.card{min-width:0}
+.card.is-error{border-color:var(--red);box-shadow:6px 6px 0 var(--red)}
+.err-tag{display:none;position:absolute;top:-17px;right:24px;background:var(--yellow);border:var(--bd);border-radius:999px;padding:2px 14px;font-size:13px;font-weight:900}
+.card.is-error .err-tag{display:block}
+.q-head{display:flex;align-items:flex-start;gap:14px}
+.q-tag{flex:none;font-family:var(--mono);font-weight:800;font-size:15px;background:var(--red);color:var(--white);border:var(--bd);border-radius:999px;padding:2px 14px;line-height:1.5}
+.q-text{font-size:clamp(18px,2.2vw,22px);font-weight:900;line-height:1.45;padding-top:1px}
+.q-text .req,.field-label .req{color:var(--red)}
+.q-hint{font-size:14px;font-weight:700;color:var(--gray);margin-top:6px}
+
+/* ---------- basic fields ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px 28px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field-label{font-size:16px;font-weight:900}
+.input,.select{width:100%;height:56px;padding:0 18px;background:#fff;border:var(--bd);border-radius:var(--r-md);font-size:17px;font-weight:700;outline:none}
+.select{appearance:none;-webkit-appearance:none;padding-right:48px;cursor:pointer;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M2 2l6 6 6-6' fill='none' stroke='%231D1D1B' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 18px center}
+.input:focus,.select:focus,.textarea:focus{box-shadow:0 0 0 4px var(--yellow)}
+.input::placeholder,.textarea::placeholder{color:#9A968C;font-weight:500}
+
+/* ---------- likert ---------- */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:100px;padding:8px 4px;background:#fff;border:var(--bd);border-radius:var(--r-lg);cursor:pointer;text-align:center;transition:transform .08s,box-shadow .08s}
+.opt b{font-family:var(--mono);font-size:30px;font-weight:800;line-height:1.1}
+.opt small{font-size:13px;font-weight:900;color:var(--gray);line-height:1.3}
+.opt span:hover{background:var(--cream)}
+.opt input:checked+span{background:var(--red);color:var(--white);box-shadow:4px 4px 0 var(--char);transform:translate(-2px,-2px)}
+.opt input:checked+span small{color:var(--white)}
+.opt input:focus-visible+span{outline:4px solid var(--yellow);outline-offset:2px}
+
+/* ---------- triage ---------- */
+.triage-img{margin-top:22px;border:var(--bd);border-radius:var(--r-lg);overflow:hidden;background:#fff}
+.triage-img img{display:block;width:100%;height:auto}
+.pts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+.pt{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:150px;padding:18px 20px;background:#fff;border:var(--bd);border-radius:var(--r-lg);cursor:pointer;text-align:left;transition:transform .08s,box-shadow .08s}
+.pt:hover{background:var(--cream)}
+.pt__lb{font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--gray)}
+.pt__id{font-size:60px;font-weight:900;line-height:1}
+.pt__desc{font-size:14px;font-weight:700;line-height:1.5}
+.pt__rank{position:absolute;top:14px;right:14px;width:44px;height:44px;display:grid;place-items:center;border:var(--bd);border-radius:50%;font-family:var(--mono);font-size:20px;font-weight:800;background:var(--yellow);color:var(--char)}
+.pt.on{background:var(--navy);color:var(--cream);box-shadow:4px 4px 0 var(--char);transform:translate(-2px,-2px)}
+.pt.on .pt__lb{color:var(--yellow)}
+.pt:focus-visible{outline:4px solid var(--yellow);outline-offset:2px}
+.seq{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px;padding-top:22px;border-top:2px dashed var(--char)}
+.seq__label{font-weight:900;margin-right:6px}
+.slot{width:56px;height:56px;display:grid;place-items:center;border:var(--bd);border-radius:var(--r-md);font-size:26px;font-weight:900;background:#fff}
+.slot.on{background:var(--yellow)}
+.seq__arrow{font-family:var(--mono);font-weight:800}
+.btn-ghost{margin-left:auto;height:44px;padding:0 20px;border:var(--bd);border-radius:999px;background:transparent;font-weight:900;cursor:pointer}
+.btn-ghost:hover{background:var(--char);color:var(--cream)}
+
+/* ---------- textarea ---------- */
+.textarea{display:block;width:100%;min-height:150px;margin-top:20px;padding:16px 18px;background:#fff;border:var(--bd);border-radius:var(--r-lg);font-size:17px;font-weight:700;line-height:1.7;resize:vertical;outline:none}
+.counter{margin-top:8px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gray)}
+
+/* ---------- submit ---------- */
+.submit{background:var(--navy);color:var(--cream);padding:56px 0;border-bottom:var(--bd)}
+.submit__in{display:flex;align-items:center;justify-content:space-between;gap:32px}
+.submit__t{font-size:clamp(24px,3vw,32px);font-weight:900;line-height:1.3}
+.submit__s{font-weight:700;opacity:.8;margin-top:6px}
+.btn-main{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:12px;height:72px;padding:0 44px;background:var(--red);color:var(--white);border:var(--bd);border-radius:999px;box-shadow:6px 6px 0 var(--yellow);font-size:22px;font-weight:900;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.btn-main:hover{background:var(--red-dk)}
+.btn-main:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--yellow)}
+.btn-main:disabled{opacity:.6;cursor:wait}
+
+/* ---------- done ---------- */
+.done{background:var(--red);color:var(--white);border-bottom:var(--bd);padding:88px 0}
+.done__k{font-family:var(--mono);font-size:14px;font-weight:800;letter-spacing:.14em;color:var(--yellow)}
+.done__t{font-size:clamp(52px,9vw,112px);font-weight:900;line-height:1;margin:18px 0 20px}
+.done__p{font-size:18px;font-weight:700;max-width:640px}
+.receipt{margin-top:36px;max-width:560px;background:var(--cream);color:var(--char);border:var(--bd);border-radius:var(--r-xl);box-shadow:var(--sh);padding:8px 28px}
+.receipt div{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:2px solid var(--char);font-weight:900}
+.receipt div:last-child{border-bottom:0}
+.receipt span{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--gray);letter-spacing:.06em}
+
+/* ---------- footer / toast ---------- */
+.foot{background:var(--char);color:var(--cream)}
+.foot__in{display:flex;justify-content:space-between;gap:16px;padding:22px 0;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em}
+.toast{position:fixed;left:50%;bottom:24px;z-index:50;transform:translate(-50%,160%);max-width:calc(100% - 32px);background:var(--char);color:var(--cream);border:3px solid var(--yellow);border-radius:999px;padding:14px 26px;font-weight:900;transition:transform .25s}
+.toast:not(.show){visibility:hidden}
+.toast.show{transform:translate(-50%,0)}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .hero__in{grid-template-columns:1fr;gap:36px;padding:48px 0 44px}
+  .brief{max-width:440px}
+}
+@media (max-width:720px){
+  :root{--gutter:16px}
+  .topline__in span:last-child{display:none}
+  .band{padding:48px 0}
+  .sec-en{display:none}
+  .card{padding:24px 20px 24px}
+  .grid2{grid-template-columns:1fr;gap:20px}
+  .scale{gap:8px}
+  .opt span{min-height:84px;border-radius:var(--r-md)}
+  .opt b{font-size:24px}
+  .opt small{font-size:11px}
+  .pts{grid-template-columns:1fr 1fr;gap:12px}
+  .pt{min-height:128px;padding:16px}
+  .pt__id{font-size:48px}
+  .slot{width:48px;height:48px;font-size:22px}
+  .seq{gap:8px}
+  .btn-ghost{margin-left:0}
+  .submit__in{flex-direction:column;align-items:stretch;text-align:left}
+  .btn-main{width:100%}
+  .foot__in{flex-direction:column;gap:4px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo" id="demoBar" hidden>預覽模式｜尚未設定 GAS_URL，送出的資料不會寫入試算表</div>
+
+<header class="topline">
+  <div class="wrap topline__in">
+    <span>CHI MEI MEDICAL CENTER · 教學部臨床技能中心</span>
+    <span>FORM UGY-DF · 115</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero__in">
+    <div>
+      <p class="kicker">DISASTER FRONTLINE // 災害應變指揮訓練</p>
+      <h1 class="hero__title">災難<br><span>最前線</span></h1>
+      <p class="hero__sub">實習醫學生（UGY）課程滿意度調查</p>
+      <div class="chips">
+        <span class="chip chip--y">115 學年度</span>
+        <span class="chip">課後回饋</span>
+        <span class="chip">約 2 分鐘</span>
+      </div>
+    </div>
+    <aside class="brief">
+      <p class="brief__label">BRIEFING · 填答說明</p>
+      <ol class="brief__list">
+        <li><b>01</b>基本資料</li>
+        <li><b>02</b>課程評價</li>
+        <li><b>03</b>檢傷情境題</li>
+        <li><b>04</b>心得與建議</li>
+      </ol>
+      <p class="brief__note">標示 <em>*</em> 為必填，送出後無法修改。</p>
+    </aside>
+  </div>
+</section>
+<div class="hazard" aria-hidden="true"></div>
+
+<main id="formView">
+  <div class="progress">
+    <div class="wrap progress__in">
+      <span class="progress__label">填答進度</span>
+      <div class="progress__bar" id="pBar"></div>
+      <span class="progress__num" id="pNum">0 / 7</span>
+    </div>
+  </div>
+
+  <!-- 01 基本資料 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">01</span><h2>基本資料</h2><span class="sec-en">IDENTIFICATION</span></div>
+      <p class="sec-desc">請選擇你參加的梯次，並填寫學校、年級與姓名。</p>
+      <div class="card" id="card-basic">
+        <span class="err-tag">請完成基本資料</span>
+        <div class="grid2">
+          <label class="field">
+            <span class="field-label">課程梯次 <span class="req">*</span></span>
+            <select class="select" id="session"><option value="">載入中…</option></select>
+          </label>
+          <label class="field">
+            <span class="field-label">姓名 <span class="req">*</span></span>
+            <input class="input" id="name" type="text" autocomplete="name" placeholder="請輸入中文全名">
+          </label>
+          <div class="field">
+            <label class="field-label" for="school">學校 <span class="req">*</span></label>
+            <select class="select" id="school"></select>
+            <input class="input" id="schoolOther" type="text" placeholder="請輸入學校名稱" hidden>
+          </div>
+          <div class="field">
+            <label class="field-label" for="grade">年級 <span class="req">*</span></label>
+            <select class="select" id="grade"></select>
+            <input class="input" id="gradeOther" type="text" placeholder="請輸入年級" hidden>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 課程評價 -->
+  <section class="band band--cream">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">02</span><h2>課程評價</h2><span class="sec-en">COURSE RATING</span></div>
+      <p class="sec-desc">1 分為最低、5 分為最高，請依實際感受點選。</p>
+      <div class="stack" id="likertList"></div>
+    </div>
+  </section>
+
+  <!-- 03 檢傷情境 -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">03</span><h2>檢傷情境題</h2><span class="sec-en">TRIAGE DRILL</span></div>
+      <p class="sec-desc">依照檢傷顏色判斷四位病患的處置優先順序。</p>
+      <div class="card" id="card-triage">
+        <span class="err-tag">請排完四位病患</span>
+        <div class="q-head">
+          <span class="q-tag">Q5</span>
+          <div>
+            <p class="q-text">以下有四位病患，請依照檢傷顏色決定處置順序 <span class="req">*</span></p>
+            <p class="q-hint">依你判斷「最優先 → 最後」的順序點選病患卡片；再點一次可取消。</p>
+          </div>
+        </div>
+        <div class="triage-img" id="triageImg" hidden><img alt="檢傷情境病患圖"></div>
+        <div class="pts" id="pts"></div>
+        <div class="seq">
+          <span class="seq__label">你的處置順序</span>
+          <span class="slot" data-i="0">–</span><span class="seq__arrow">→</span>
+          <span class="slot" data-i="1">–</span><span class="seq__arrow">→</span>
+          <span class="slot" data-i="2">–</span><span class="seq__arrow">→</span>
+          <span class="slot" data-i="3">–</span>
+          <button type="button" class="btn-ghost" id="triageReset">重新排序</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 心得與建議 -->
+  <section class="band band--cream">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-no">04</span><h2>心得與建議</h2><span class="sec-en">DEBRIEF</span></div>
+      <p class="sec-desc">你的回饋會直接用於下一梯次的課程調整。</p>
+      <div class="stack">
+        <div class="card" id="card-gain">
+          <span class="err-tag">此題必填</span>
+          <div class="q-head"><span class="q-tag">Q6</span><p class="q-text">您覺得本課程中最有收穫的部分是什麼？ <span class="req">*</span></p></div>
+          <textarea class="textarea" id="gain" maxlength="500" placeholder="例如：檢傷分類、團隊分工、指揮架構、模擬演練……"></textarea>
+          <p class="counter"><span data-for="gain">0</span> / 500</p>
+        </div>
+        <div class="card" id="card-improve">
+          <div class="q-head"><span class="q-tag">Q7</span><p class="q-text">您覺得課程還有哪些需要改進的地方？</p></div>
+          <textarea class="textarea" id="improve" maxlength="500" placeholder="選填，沒有可留白"></textarea>
+          <p class="counter"><span data-for="improve">0</span> / 500</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="submit">
+    <div class="wrap submit__in">
+      <div>
+        <p class="submit__t">確認無誤，送出回饋</p>
+        <p class="submit__s">每位學員每梯次限填一次，送出後無法修改。</p>
+      </div>
+      <button type="button" class="btn-main" id="submitBtn">送出問卷 <span aria-hidden="true">→</span></button>
+    </div>
+  </section>
+</main>
+
+<section class="done" id="doneView" hidden>
+  <div class="wrap">
+    <p class="done__k">MISSION COMPLETE</p>
+    <h2 class="done__t">回饋已送出</h2>
+    <p class="done__p">感謝你參與「災難最前線」課程。你的意見將作為臨床技能中心持續改善課程的依據。</p>
+    <div class="receipt">
+      <div><span>NAME</span><b id="rName"></b></div>
+      <div><span>SESSION</span><b id="rSession"></b></div>
+      <div><span>SUBMITTED</span><b id="rTime" class="mono"></b></div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <span>奇美醫學中心 教學部 臨床技能中心</span>
+    <span>UGY · DISASTER FRONTLINE · FEEDBACK</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================= 設定區 ================= */
+const CONFIG = {
+  GAS_URL: '',   // 貼上 Apps Script 網頁應用程式網址（…/exec）；留空為預覽模式
+  SCHOOLS: ['中山醫學大學', '國立中山大學後醫學系', '國防醫學大學'],
+  GRADES: ['五年級', '六年級', '後醫系三年級', '後醫系四年級'],
+  TRIAGE_IMAGE: '',          // 檢傷情境圖網址（選填）
+  PATIENTS: [                // 病患卡片說明（選填）
+    { id: 'A', desc: '' },
+    { id: 'B', desc: '' },
+    { id: 'C', desc: '' },
+    { id: 'D', desc: '' }
+  ]
+};
+const AGREE = ['非常不同意', '不同意', '普通', '同意', '非常同意'];
+const FIT   = ['非常不合適', '不合適', '普通', '合適', '非常合適'];
+const QUESTIONS = [
+  { id: 'q1', no: 'Q1', text: '本課程是否幫助您理解災難應變的概念？', labels: AGREE },
+  { id: 'q2', no: 'Q2', text: '課程是否增進您在急救情境下的團隊合作？', labels: AGREE },
+  { id: 'q3', no: 'Q3', text: '課程是否讓您更能體會臨場壓力下的判斷與決策？', labels: AGREE },
+  { id: 'q4', no: 'Q4', text: '本次課程時間分配（講解 vs. 演練）是否合適？', labels: FIT }
+];
+/* ========================================= */
+
+const DEMO = !CONFIG.GAS_URL;
+const $ = s => document.querySelector(s);
+const state = { triage: [], sessions: [] };
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 3200);
+}
+async function apiGet(action, params = {}) {
+  if (DEMO) return { ok: true, sessions: [{ code: 'DEMO-01', date: '2026/10/22', name: '災難最前線（預覽梯次）' }] };
+  const qs = new URLSearchParams({ action, ...params }).toString();
+  const r = await fetch(CONFIG.GAS_URL + '?' + qs);
+  return r.json();
+}
+async function apiPost(payload) {
+  if (DEMO) { await new Promise(r => setTimeout(r, 600)); return { ok: true, time: new Date().toLocaleString('zh-TW', { hour12: false }) }; }
+  const r = await fetch(CONFIG.GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  return r.json();
+}
+
+/* ---------- render ---------- */
+function fillSelect(el, list, placeholder) {
+  el.innerHTML = `<option value="">${placeholder}</option>` +
+    list.map(v => `<option value="${v}">${v}</option>`).join('') +
+    `<option value="__other">其他</option>`;
+}
+function renderLikert() {
+  $('#likertList').innerHTML = QUESTIONS.map(q => `
+    <fieldset class="card" id="card-${q.id}" style="border-style:solid">
+      <span class="err-tag">此題必填</span>
+      <div class="q-head"><span class="q-tag">${q.no}</span><legend class="q-text">${q.text} <span class="req">*</span></legend></div>
+      <div class="scale">
+        ${q.labels.map((lb, i) => `
+          <label class="opt"><input type="radio" name="${q.id}" value="${i + 1}"><span><b>${i + 1}</b><small>${lb}</small></span></label>`).join('')}
+      </div>
+    </fieldset>`).join('');
+}
+function renderPatients() {
+  $('#pts').innerHTML = CONFIG.PATIENTS.map(p => `
+    <button type="button" class="pt" data-id="${p.id}" aria-pressed="false">
+      <span class="pt__lb">PATIENT</span>
+      <span class="pt__id">${p.id}</span>
+      ${p.desc ? `<span class="pt__desc">${p.desc}</span>` : ''}
+      <span class="pt__rank" hidden></span>
+    </button>`).join('');
+  if (CONFIG.TRIAGE_IMAGE) { $('#triageImg').hidden = false; $('#triageImg img').src = CONFIG.TRIAGE_IMAGE; }
+}
+function renderTriage() {
+  document.querySelectorAll('.pt').forEach(b => {
+    const i = state.triage.indexOf(b.dataset.id);
+    const rank = b.querySelector('.pt__rank');
+    b.classList.toggle('on', i > -1);
+    b.setAttribute('aria-pressed', i > -1);
+    rank.hidden = i < 0; rank.textContent = i + 1;
+  });
+  document.querySelectorAll('.slot').forEach(s => {
+    const v = state.triage[+s.dataset.i];
+    s.textContent = v || '–'; s.classList.toggle('on', !!v);
+  });
+  updateProgress();
+}
+
+/* ---------- values & validation ---------- */
+const pick = (sel, other) => $(sel).value === '__other' ? $(other).value.trim() : $(sel).value;
+const radio = name => (document.querySelector(`input[name="${name}"]:checked`) || {}).value || '';
+function checks() {
+  return [
+    { card: '#card-basic', ok: !!($('#session').value && pick('#school', '#schoolOther') && pick('#grade', '#gradeOther') && $('#name').value.trim()) },
+    ...QUESTIONS.map(q => ({ card: '#card-' + q.id, ok: !!radio(q.id) })),
+    { card: '#card-triage', ok: state.triage.length === 4 },
+    { card: '#card-gain', ok: !!$('#gain').value.trim() }
+  ];
+}
+function updateProgress() {
+  const c = checks(), done = c.filter(x => x.ok).length;
+  $('#pBar').innerHTML = c.map(x => `<i class="${x.ok ? 'on' : ''}"></i>`).join('');
+  $('#pNum').textContent = `${done} / ${c.length}`;
+  c.forEach(x => { if (x.ok) $(x.card).classList.remove('is-error'); });
+}
+
+/* ---------- sessions & prefill ---------- */
+async function loadSessions() {
+  const sel = $('#session');
+  try {
+    const res = await apiGet('sessions');
+    state.sessions = (res.sessions || []);
+    if (!state.sessions.length) { sel.innerHTML = '<option value="">目前沒有開放中的梯次</option>'; return; }
+    sel.innerHTML = '<option value="">請選擇梯次</option>' +
+      state.sessions.map(s => `<option value="${s.code}">${s.date}｜${s.name}</option>`).join('');
+    const want = new URLSearchParams(location.search).get('s');
+    if (want && state.sessions.some(s => s.code === want)) sel.value = want;
+    else if (state.sessions.length === 1) sel.value = state.sessions[0].code;
+  } catch (e) {
+    sel.innerHTML = '<option value="">梯次載入失敗，請重新整理</option>';
+  }
+  updateProgress();
+}
+function prefill() {
+  const p = new URLSearchParams(location.search);
+  const setSel = (sel, other, v) => {
+    if (!v) return;
+    if ([...$(sel).options].some(o => o.value === v)) $(sel).value = v;
+    else { $(sel).value = '__other'; $(other).hidden = false; $(other).value = v; }
+  };
+  setSel('#school', '#schoolOther', p.get('sch'));
+  setSel('#grade', '#gradeOther', p.get('g'));
+  if (p.get('n')) $('#name').value = p.get('n');
+}
+
+/* ---------- submit ---------- */
+async function submit() {
+  const c = checks(), bad = c.filter(x => !x.ok);
+  c.forEach(x => $(x.card).classList.toggle('is-error', !x.ok));
+  if (bad.length) {
+    const el = $(bad[0].card);
+    window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: 'smooth' });
+    toast(`還有 ${bad.length} 題尚未完成`);
+    return;
+  }
+  const btn = $('#submitBtn');
+  btn.disabled = true; btn.firstChild.textContent = '送出中… ';
+  const payload = {
+    action: 'survey',
+    session: $('#session').value,
+    school: pick('#school', '#schoolOther'),
+    grade: pick('#grade', '#gradeOther'),
+    name: $('#name').value.trim(),
+    q1: radio('q1'), q2: radio('q2'), q3: radio('q3'), q4: radio('q4'),
+    triage: state.triage.join(''),
+    gain: $('#gain').value.trim(),
+    improve: $('#improve').value.trim()
+  };
+  try {
+    const res = await apiPost(payload);
+    if (!res.ok) throw new Error(res.message || '送出失敗，請稍後再試');
+    const s = state.sessions.find(x => x.code === payload.session) || {};
+    $('#rName').textContent = payload.name;
+    $('#rSession').textContent = s.date ? `${s.date}｜${s.name}` : payload.session;
+    $('#rTime').textContent = res.time || '';
+    $('#formView').hidden = true; $('#doneView').hidden = false;
+    window.scrollTo({ top: 0 });
+  } catch (e) {
+    toast(e.message || '網路異常，請稍後再試');
+    btn.disabled = false; btn.firstChild.textContent = '送出問卷 ';
+  }
+}
+
+/* ---------- init ---------- */
+function init() {
+  $('#demoBar').hidden = !DEMO;
+  fillSelect($('#school'), CONFIG.SCHOOLS, '請選擇學校');
+  fillSelect($('#grade'), CONFIG.GRADES, '請選擇年級');
+  renderLikert(); renderPatients(); prefill(); renderTriage(); loadSessions();
+
+  [['#school', '#schoolOther'], ['#grade', '#gradeOther']].forEach(([s, o]) =>
+    $(s).addEventListener('change', () => { $(o).hidden = $(s).value !== '__other'; if (!$(o).hidden) $(o).focus(); }));
+  document.addEventListener('input', updateProgress);
+  document.addEventListener('change', updateProgress);
+  ['gain', 'improve'].forEach(id => $('#' + id).addEventListener('input', e =>
+    document.querySelector(`[data-for="${id}"]`).textContent = e.target.value.length));
+  $('#pts').addEventListener('click', e => {
+    const b = e.target.closest('.pt'); if (!b) return;
+    const i = state.triage.indexOf(b.dataset.id);
+    if (i > -1) state.triage.splice(i, 1);
+    else if (state.triage.length < 4) state.triage.push(b.dataset.id);
+    renderTriage();
+  });
+  $('#triageReset').addEventListener('click', () => { state.triage = []; renderTriage(); });
+  $('#submitBtn').addEventListener('click', submit);
+}
+init();
+</script>
+</body>
+</html>
