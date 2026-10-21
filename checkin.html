@@ -242,13 +242,13 @@ td.nm{font-weight:900;font-size:17px}
 <section class="band" id="panel-board" hidden>
   <div class="wrap">
     <div class="sec-head"><span class="sec-no">OPS</span><h2>簽到／回收狀態</h2><span class="sec-en">STATUS BOARD</span></div>
-    <p class="sec-desc">工作人員專用：即時查看本梯次的報到名單與問卷回收狀況。</p>
+    <p class="sec-desc">工作人員專用：即時查看本梯次的報到名單與問卷回收狀況。密碼與儀表板共用，可在試算表「系統設定」工作表修改。</p>
 
     <div class="card lock" id="lockCard">
       <label class="field">
-        <span class="field-label">工作人員通行碼</span>
+        <span class="field-label">管理密碼</span>
         <div class="lock__row">
-          <input class="input" id="key" type="password" autocomplete="off" placeholder="請輸入通行碼">
+          <input class="input" id="key" type="password" autocomplete="off" placeholder="請輸入管理密碼">
           <button type="button" class="btn-pill" id="unlockBtn">開啟看板</button>
         </div>
       </label>
@@ -320,7 +320,7 @@ td.nm{font-weight:900;font-size:17px}
 <script>
 /* ================= 設定區 ================= */
 const CONFIG = {
-  GAS_URL: '',   // 貼上 Apps Script 網頁應用程式網址（…/exec）；留空為預覽模式
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbwLuUrYxrqGdlOXaFSDBETDdEkt8LgkeeRWrWcotNgGeS46MAkDimWOEr1lH8PbnFJs/exec',   // 貼上 Apps Script 網頁應用程式網址（…/exec）；留空為預覽模式
   SCHOOLS: ['中山醫學大學', '國立中山大學後醫學系', '國防醫學大學'],
   GRADES: ['五年級', '六年級', '後醫系三年級', '後醫系四年級'],
   RESET_SECONDS: 8,
@@ -357,7 +357,7 @@ async function apiGet(action, params = {}) {
   if (DEMO) {
     const r = demoDB.rows;
     if (action === 'sessions') return { ok: true, sessions: demoDB.sessions };
-    if (action === 'allSessions') return params.key ? { ok: true, sessions: demoDB.sessions } : { ok: false, message: '通行碼錯誤' };
+    if (action === 'allSessions') return params.key ? { ok: true, sessions: demoDB.sessions } : { ok: false, message: '密碼錯誤' };
     if (action === 'count') return { ok: true, checkin: r.filter(x => x.checkedIn).length, survey: r.filter(x => x.survey).length };
     if (action === 'status') return { ok: true, rows: r };
   }
@@ -469,10 +469,10 @@ function resetForm() {
 /* ---------- board ---------- */
 async function unlock() {
   const key = $('#key').value.trim();
-  if (!key) { $('#key').classList.add('is-error'); toast('請輸入通行碼'); return; }
+  if (!key) { $('#key').classList.add('is-error'); toast('請輸入管理密碼'); return; }
   try {
     const r = await apiGet('allSessions', { key });
-    if (!r.ok) throw new Error(r.message || '通行碼錯誤');
+    if (!r.ok) throw new Error(r.message || '密碼錯誤');
     state.key = key; store.sset('df_key', key);
     const list = r.sessions || [];
     $('#bSession').innerHTML = list.length ? sessOptions(list) : '<option value="">尚無梯次</option>';
